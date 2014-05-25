@@ -1,4 +1,3 @@
-Content\arial.xnb
 Content\background.xnb
 Content\bomb.xnb
 Content\Enemies\enemy_hunter_transparent.xnb
@@ -26,3 +25,5 @@ Content\UI\ZAPISZ-GRE-HOVER.xnb
 Content\UI\ZAPISZ-GRE.xnb
 Content\wall.xnb
 Content\wall_destroyable.xnb
+Content\bombfire.xnb
+Content\arial.xnb

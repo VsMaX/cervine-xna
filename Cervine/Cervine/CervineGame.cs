@@ -21,10 +21,10 @@ namespace Cervine
     /// </summary>
     public class CervineGame : Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        SpriteManager spriteManager;
-        MainMenu mainMenu;
+        private GraphicsDeviceManager graphics;
+        private SpriteBatch spriteBatch;
+        private SpriteManager spriteManager;
+        private MainMenu mainMenu;
         public GameState GameState { get; set; }
 
         public CervineGame()
@@ -43,7 +43,8 @@ namespace Cervine
         /// </summary>
         protected override void Initialize()
         {
-            spriteManager = new SpriteManager(this, new Point(20, 15));
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            spriteManager = new SpriteManager(this, new Point(20, 15), spriteBatch);
             Components.Add(spriteManager);
             graphics.IsFullScreen = false;
             graphics.PreferredBackBufferHeight = 680;
@@ -60,7 +61,6 @@ namespace Cervine
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
             // TODO: use this.Content to load your game content here
         }
 
@@ -72,7 +72,7 @@ namespace Cervine
         {
             // TODO: Unload any non ContentManager content here
         }
-        
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -89,7 +89,6 @@ namespace Cervine
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            
             GraphicsDevice.Clear(new Color(151, 151, 151, 255));
 
             base.Draw(gameTime);

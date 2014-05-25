@@ -31,17 +31,19 @@ namespace Cervine
         public Point boardSize;
         public MainMenu mainMenu;
         public MainMenu pauseMenu;
+        public MainMenu gameScoresMenu;
         public TimeSpan gameTimeElapsed;
         public SpriteFont gameTimeFont;
         public CervineGame game;
         public GameBoard gameBoard;
 
-        public SpriteManager(CervineGame game, Point boardSize)
+        public SpriteManager(CervineGame game, Point boardSize, SpriteBatch spriteBatch)
             : base(game)
         {
             Game.Content.RootDirectory = "Content";
             this.game = game;
             this.boardSize = boardSize;
+            this.spriteBatch = spriteBatch;
         }
 
         /// <summary>
@@ -62,10 +64,9 @@ namespace Cervine
 
         protected override void LoadContent()
         {
-            spriteBatch = new SpriteBatch(Game.GraphicsDevice);
             gameTimeFont = Game.Content.Load<SpriteFont>(@"arial");
 
-            this.gameBoard = new GameBoard(boardSize, 40, 40, 80, game, gameTimeFont);
+            this.gameBoard = new GameBoard(boardSize, 40, 40, 80, game, gameTimeFont, Game.Content.Load<Texture2D>(@"bombfire"));
             gameBoard.GameOverEvent += OnGameOver;
             //Load the player sprite
             player = new UserControlledSprite(
@@ -83,7 +84,7 @@ namespace Cervine
                 new Point(5,0), gameBoard));
             
             var r = new Random();
-
+            var wallSprite = Game.Content.Load<Texture2D>(@"wall");
             //generate random walls
             for (int i = 0; i < 20; i++)
             {
@@ -92,10 +93,12 @@ namespace Cervine
                 var position = new Point(X, Y);
                 if (gameBoard.IsPositionValid(position))
                 {
-                    gameBoard.AddObject(new WallSprite(Game.Content.Load<Texture2D>(@"wall"), new Point(X, Y),
+                    gameBoard.AddObject(new WallSprite(wallSprite, new Point(X, Y),
                         gameBoard));
                 }
             }
+
+            var wallDestroyableSprite = Game.Content.Load<Texture2D>(@"wall_destroyable");
             //generate random destroyable walls
             for (int i = 0; i < 20; i++)
             {
@@ -104,9 +107,9 @@ namespace Cervine
                 var position = new Point(X, Y);
                 if (gameBoard.IsPositionValid(position))
                 {
-                    var wallSprite = new DestroyableWallSprite(Game.Content.Load<Texture2D>(@"wall_destroyable"),
+                    var destrWallSprite = new DestroyableWallSprite(wallDestroyableSprite,
                     new Point(X, Y), gameBoard);
-                    gameBoard.AddObject(wallSprite);
+                    gameBoard.AddObject(destrWallSprite);
                 }
             }
 
@@ -165,6 +168,10 @@ namespace Cervine
             {
                 UpdatePauseMenu(gameTime);
             }
+            else if(game.GameState == GameState.GameOver)
+            {
+                gameScoresMenu.Update(gameTime, Game.Window.ClientBounds);
+            }
 
             base.Update(gameTime);
         }
@@ -192,7 +199,9 @@ namespace Cervine
 
         public override void Draw(GameTime gameTime)
         {
-            spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+            
+            spriteBatch.Draw(backgroundImage, new Rectangle(0, 0, 800, 680), Color.White);
 
             if (game.GameState == GameState.Playing)
             {
@@ -206,20 +215,29 @@ namespace Cervine
             {
                 pauseMenu.Draw(gameTime, spriteBatch);
             }
-            spriteBatch.End();
+            else if (game.GameState == GameState.GameOver)
+            {
+                gameScoresMenu.Draw(gameTime, spriteBatch);
+            }
             base.Draw(gameTime);
+
+            spriteBatch.End();
         }
 
         public void DrawGamePlaying(GameTime gameTime)
         {
             // Draw the player
-            gameBoard.Draw(gameTime, spriteBatch);
-            //UI
-            //game time
+            // UI
+            // game time
             gameTimeElapsed += gameTime.ElapsedGameTime;
             spriteBatch.DrawString(gameTimeFont, gameTimeElapsed.TotalSeconds.ToString("0000"), new Vector2(20, 10), Color.White);
+            
+
+            gameBoard.Draw(gameTime, spriteBatch);
+            
+            
             //background
-            spriteBatch.Draw(backgroundImage, new Rectangle(0, 0, 800, 680), Color.White);
+
         }
     }
 }

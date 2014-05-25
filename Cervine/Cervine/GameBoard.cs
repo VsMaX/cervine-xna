@@ -27,8 +27,9 @@ namespace Cervine
             get { return Drawables.FirstOrDefault(x => x is UserControlledSprite) as UserControlledSprite; }
         }
 
-        public GameBoard(Point boardSize, float frameWidth, float frameHeight, float menuBarHeight, CervineGame game, SpriteFont font)
+        public GameBoard(Point boardSize, float frameWidth, float frameHeight, float menuBarHeight, CervineGame game, SpriteFont font, Texture2D bombFire)
         {
+            _bombFire = bombFire;
             Fields = new Field[boardSize.X, boardSize.Y];
             Drawables = new List<Sprite>();
             for (int i = 0; i < boardSize.X; i++)
@@ -89,30 +90,33 @@ namespace Cervine
         
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            foreach (var drawable in Drawables)
+            for (int i = 0; i < Drawables.Count; i++)
             {
+                var drawable = Drawables[i];
                 var position = drawable.Position;
                 spriteBatch.Draw(drawable.TextureImage, new Vector2(FrameWidth * position.X, FrameHeight * position.Y + MenuBarHeight)
                     , Color.White);
+            }
+
+            for (int i = Bombs.Count - 1; i >= 0; i--)
+            {
+                var bomb = Bombs[i];
+                spriteBatch.Draw(bomb.TextureImage, new Vector2(FrameWidth * bomb.Position.X, FrameHeight * bomb.Position.Y + MenuBarHeight), Color.White);
+                if (bomb.TimeTick < 120)
+                {
+                    var positions = bomb.GetAffectedPositions();
+                    foreach (var position in positions)
+                    {
+                        spriteBatch.Draw(_bombFire, new Vector2(FrameWidth * position.X, FrameHeight * position.Y + MenuBarHeight),
+                            Color.White);
+                    }
+                }
             }
 
             //draw life
             for (int i = 0; i < Player.Life; i++)
             {
                 spriteBatch.Draw(Player.LifeTextureImage, new Vector2(50 * i + 200, 10), Color.White);
-            }
-
-            for (int i = Bombs.Count - 1; i >= 0; i--)
-            {
-                var bomb = Bombs[i];
-                if (bomb.TimeTick < 60)
-                {
-                    var positions = bomb.GetAffectedPositions();
-                    foreach (var position in positions)
-                    {
-
-                    }
-                }
             }
         }
 
@@ -136,6 +140,11 @@ namespace Cervine
                 var drawable = Drawables[i];
                 if (drawable.Life <= 0)
                 {
+                    if (drawable is UserControlledSprite)
+                    {
+                        _game.GameState = GameState.GameOver;
+                        return;
+                    }
                     Fields[drawable.Position.X, drawable.Position.Y].Sprite = null;
                     Drawables.RemoveAt(i);
                 }
@@ -148,8 +157,8 @@ namespace Cervine
             for (int i = Bombs.Count - 1; i >= 0; i--)
             {
                 var bomb = Bombs[i];
-                bomb.TimeTick++;
-                if (bomb.TimeTick > 600)
+                bomb.TimeTick--;
+                if (bomb.TimeTick <= 0)
                 {
                     DestroyBomb(bomb);
                     Bombs.RemoveAt(i);
@@ -164,72 +173,15 @@ namespace Cervine
 
         private void DestroyBomb(Bomb bomb)
         {
-            int x = bomb.Position.X;
-            int y = bomb.Position.Y;
-            var position1 = AdjustToBoardSize(new Point(x + 1, y));
-            var position2 = AdjustToBoardSize(new Point(x - 1, y));
-            var position3 = AdjustToBoardSize(new Point(x, y + 1));
-            var position4 = AdjustToBoardSize(new Point(x, y - 1));
-            var position5 = AdjustToBoardSize(new Point(x + 2, y));
-            var position6 = AdjustToBoardSize(new Point(x - 2, y));
-            var position7 = AdjustToBoardSize(new Point(x, y + 2));
-            var position8 = AdjustToBoardSize(new Point(x, y - 2));
-            var position9 = AdjustToBoardSize(new Point(x + 1, y + 1));
-            var position10 = AdjustToBoardSize(new Point(x - 1, y - 1));
-            var position11 = AdjustToBoardSize(new Point(x + 1, y - 1));
-            var position12 = AdjustToBoardSize(new Point(x - 1, y + 1));
-
-            var sprite = Drawables.FirstOrDefault(z => z.Position == position1);
-            if (sprite != null)
+            var positions = bomb.GetAffectedPositions();
+            foreach (var position in positions)
             {
-                sprite.DecreaseLife();
+                var sprite = Drawables.FirstOrDefault(z => z.Position == position);
+                if (sprite != null)
+                {
+                    sprite.DecreaseLife();
+                }
             }
-
-            sprite = Drawables.FirstOrDefault(z => z.Position == position2);
-            if (sprite != null)
-            {
-                sprite.DecreaseLife();
-            }
-
-            sprite = Drawables.FirstOrDefault(z => z.Position == position3);
-            if (sprite != null)
-                sprite.DecreaseLife();
-
-            sprite = Drawables.FirstOrDefault(z => z.Position == position4);
-            if (sprite != null)
-                sprite.DecreaseLife();
-
-            sprite = Drawables.FirstOrDefault(z => z.Position == position5);
-            if (sprite != null)
-                sprite.DecreaseLife();
-
-            sprite = Drawables.FirstOrDefault(z => z.Position == position6);
-            if (sprite != null)
-                sprite.DecreaseLife();
-            
-            sprite = Drawables.FirstOrDefault(z => z.Position == position7);
-            if (sprite != null)
-                sprite.DecreaseLife();
-            
-            sprite = Drawables.FirstOrDefault(z => z.Position == position8);
-            if (sprite != null)
-                sprite.DecreaseLife();
-
-            sprite = Drawables.FirstOrDefault(z => z.Position == position9);
-            if (sprite != null)
-                sprite.DecreaseLife();
-
-            sprite = Drawables.FirstOrDefault(z => z.Position == position10);
-            if (sprite != null)
-                sprite.DecreaseLife();
-
-            sprite = Drawables.FirstOrDefault(z => z.Position == position11);
-            if (sprite != null)
-                sprite.DecreaseLife();
-
-            sprite = Drawables.FirstOrDefault(z => z.Position == position12);
-            if (sprite != null)
-                sprite.DecreaseLife();
         }
         
         public void OnGameOver()
@@ -254,7 +206,6 @@ namespace Cervine
                 drawable.Reset();
                 Fields[drawable.Position.X, drawable.Position.Y].Sprite = drawable;
             }
-            
         }
 
         private Texture2D bombTexture2D
@@ -268,12 +219,16 @@ namespace Cervine
         }
 
         private Texture2D _bombTexture2D;
+        private Texture2D _bombFire;
 
         public void PlantBomb(Point position)
         {
-            var bomb = new Bomb(bombTexture2D, position, this);
-            Fields[position.X, position.Y].Bomb = bomb;
-            Bombs.Add(bomb);
+            if (Bombs.FirstOrDefault(x => x.Position.X == position.X && x.Position.Y == position.Y) == null)
+            {
+                var bomb = new Bomb(bombTexture2D, position, this);
+                Fields[position.X, position.Y].Bomb = bomb;
+                Bombs.Add(bomb);
+            }
         }
     }
 }

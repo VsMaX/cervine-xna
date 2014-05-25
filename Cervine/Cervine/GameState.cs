@@ -9,6 +9,7 @@ namespace Cervine
     {
         MainMenu,
         PauseMenu,
-        Playing
+        Playing,
+        GameOver
     }
 }

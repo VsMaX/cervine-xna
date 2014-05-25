@@ -12,6 +12,7 @@ namespace Cervine
         public Bomb(Texture2D texture2D, Point position, GameBoard board)
             : base(texture2D, position, board)
         {
+            TimeTick = 240;
         }
 
         public override Point direction
@@ -58,60 +59,65 @@ namespace Cervine
             affectedPositions.Add(position12);
 
             
-            if (!(board.GetSprite(position1) is WallSprite))
+            if ((board.GetSprite(position1) is WallSprite))
             {
                 affectedPositions.Remove(position1);
                 affectedPositions.Remove(position5);
             }
-            if (!(board.GetSprite(position2) is WallSprite))
+            if ((board.GetSprite(position2) is WallSprite))
             {
                 affectedPositions.Remove(position2);
                 affectedPositions.Remove(position6);
             }
-            if (!(board.GetSprite(position3) is WallSprite))
+            if ((board.GetSprite(position3) is WallSprite))
             {
                 affectedPositions.Remove(position3);
                 affectedPositions.Remove(position7);
             }
-            if (!(board.GetSprite(position4) is WallSprite))
+            if ((board.GetSprite(position4) is WallSprite))
             {
                 affectedPositions.Remove(position4);
                 affectedPositions.Remove(position8);
             }
-            if (!(board.GetSprite(position5) is WallSprite))
+            if ((board.GetSprite(position5) is WallSprite))
             {
                 affectedPositions.Remove(position5);
             }
-            if (!(board.GetSprite(position6) is WallSprite))
+            if ((board.GetSprite(position6) is WallSprite))
             {
                 affectedPositions.Remove(position6);
             }
-            if (!(board.GetSprite(position7) is WallSprite))
+            if ((board.GetSprite(position7) is WallSprite))
             {
                 affectedPositions.Remove(position7);
             }
-            if (!(board.GetSprite(position8) is WallSprite))
+            if ((board.GetSprite(position8) is WallSprite))
             {
                 affectedPositions.Remove(position8);
             }
-            if (!(board.GetSprite(position9) is WallSprite))
+            if ((board.GetSprite(position9) is WallSprite))
             {
                 affectedPositions.Remove(position9);
             }
-            if (!(board.GetSprite(position10) is WallSprite))
+            if ((board.GetSprite(position10) is WallSprite))
             {
                 affectedPositions.Remove(position10);
             } 
-            if (!(board.GetSprite(position11) is WallSprite))
+            if ((board.GetSprite(position11) is WallSprite))
             {
                 affectedPositions.Remove(position11);
             } 
-            if (!(board.GetSprite(position12) is WallSprite))
+            if ((board.GetSprite(position12) is WallSprite))
             {
                 affectedPositions.Remove(position12);
             }
 
             return affectedPositions;
+        }
+
+        public override void DecreaseLife()
+        {
+            this.TimeTick = 20;
         }
     }
 }
