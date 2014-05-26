@@ -26,6 +26,7 @@ namespace Cervine
         private SpriteManager spriteManager;
         private MainMenu mainMenu;
         public GameState GameState { get; set; }
+        public HighScores HighScores { get; set; }
 
         public CervineGame()
             : base()
@@ -33,6 +34,7 @@ namespace Cervine
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             GameState = GameState.MainMenu;
+            this.HighScores = new HighScores();
         }
 
         /// <summary>
@@ -92,6 +94,14 @@ namespace Cervine
             GraphicsDevice.Clear(new Color(151, 151, 151, 255));
 
             base.Draw(gameTime);
+        }
+    }
+
+    public class HighScores
+    {
+        public void Add(HighScore highScore)
+        {
+            throw new NotImplementedException();
         }
     }
 }

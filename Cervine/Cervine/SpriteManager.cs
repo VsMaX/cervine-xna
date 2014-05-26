@@ -232,12 +232,7 @@ namespace Cervine
             gameTimeElapsed += gameTime.ElapsedGameTime;
             spriteBatch.DrawString(gameTimeFont, gameTimeElapsed.TotalSeconds.ToString("0000"), new Vector2(20, 10), Color.White);
             
-
             gameBoard.Draw(gameTime, spriteBatch);
-            
-            
-            //background
-
         }
     }
 }

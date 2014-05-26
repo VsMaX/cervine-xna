@@ -69,7 +69,8 @@ namespace Cervine
 
         public bool IsPositionEmpty(Point newPosition)
         {
-            return Fields[newPosition.X, newPosition.Y].Sprite == null;
+            return Fields[newPosition.X, newPosition.Y].Sprite == null &&
+                Fields[newPosition.X, newPosition.Y].Bomb == null;
         }
 
         public bool IsPositionValid(Point newPosition)
@@ -143,6 +144,7 @@ namespace Cervine
                     if (drawable is UserControlledSprite)
                     {
                         _game.GameState = GameState.GameOver;
+                        _game.HighScores.Add(new HighScore(gameTime.TotalGameTime.TotalMilliseconds));
                         return;
                     }
                     Fields[drawable.Position.X, drawable.Position.Y].Sprite = null;
@@ -182,6 +184,7 @@ namespace Cervine
                     sprite.DecreaseLife();
                 }
             }
+            Fields[bomb.Position.X, bomb.Position.Y].Bomb = null;
         }
         
         public void OnGameOver()
@@ -230,5 +233,15 @@ namespace Cervine
                 Bombs.Add(bomb);
             }
         }
+    }
+
+    public class HighScore
+    {
+        public HighScore(double totalMilliseconds)
+        {
+            this.TotalMilliseconds = totalMilliseconds;
+        }
+
+        public double TotalMilliseconds { get; set; }
     }
 }
