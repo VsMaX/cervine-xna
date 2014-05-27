@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Cervine.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -25,6 +26,7 @@ namespace Cervine
         public int Level { get; set; }
         public double TimeSinceLastRespawn { get; set; }
         public double TimeToRespawn { get; set; }
+        public Tnt Tnt { get; set; }
 
         public UserControlledSprite Player
         {
@@ -33,13 +35,18 @@ namespace Cervine
 
         public GameBoard(Point boardSize, float frameWidth, float frameHeight, float menuBarHeight, CervineGame game, SpriteFont font, 
             Texture2D bombFire, Texture2D normalEnemyTexture, Texture2D hunterEnemyTexture, Texture2D shooterEnemyTexture,
-            Texture2D tankEnemyTexture)
+            Texture2D tankEnemyTexture, Texture2D foodTexture, Texture2D medpackTexture, Texture2D tntDetonatorTexture,
+            Texture2D chargingTexture, Texture2D tntTexture)
         {
             _bombFire = bombFire;
             _normalEnemyTexture = normalEnemyTexture;
             _hunterEnemyTexture = hunterEnemyTexture;
             _shooterEnemyTexture = shooterEnemyTexture;
             _tankEnemyTexture = tankEnemyTexture;
+            _foodTexture = foodTexture;
+            _medpackTexture = medpackTexture;
+            _tntDetonatorTexture = tntDetonatorTexture;
+            _chargingTexture = chargingTexture;
             Fields = new Field[boardSize.X, boardSize.Y];
             Drawables = new List<Sprite>();
             for (int i = 0; i < boardSize.X; i++)
@@ -57,8 +64,9 @@ namespace Cervine
             _game = game;
             this.font = font;
             Bombs = new List<Bomb>();
-            Level = 4;
-            TimeToRespawn = 20000;
+            Level = 1;
+            TimeToRespawn = 200000;
+            TimeToPowerUp = 5000;
 
             AddObject(new NormalEnemySprite(_normalEnemyTexture,
                 new Point(19, 14), this));
@@ -81,7 +89,8 @@ namespace Cervine
         {
             var spritePosition = sprite.GetPosition();
             var spriteOnBoard = Fields[spritePosition.X, spritePosition.Y].Sprite;
-            if(spriteOnBoard == null || Drawables.Remove(spriteOnBoard))
+            Fields[spritePosition.X, spritePosition.Y].Sprite = null;
+            if(spriteOnBoard == null || !Drawables.Remove(spriteOnBoard))
                 throw new Exception("No such sprite on board");
         }
 
@@ -149,6 +158,9 @@ namespace Cervine
             {
                 spriteBatch.Draw(Player.HungerTextureImage, new Vector2(i + 450, 10), Color.White);
             }
+            //powerup
+            if(Player.HasPowerUp)
+                spriteBatch.Draw(Player.PowerUp.TextureImage, new Vector2(570, 10), Color.White);
         }
 
         public Point AdjustToBoardSize(Point position)
@@ -170,17 +182,33 @@ namespace Cervine
             {
                 var drawable = Drawables[i];
                 drawable.Update(gameTime);
+                if (drawable.Life <= 0)
+                {
+                    Drawables.RemoveAt(i);
+                    if (Fields[drawable.Position.X, drawable.Position.Y].Sprite == drawable)
+                        Fields[drawable.Position.X, drawable.Position.Y].Sprite = null;
+                }
             }
 
             for (int i = Bombs.Count - 1; i >= 0; i--)
             {
                 var bomb = Bombs[i];
-                bomb.TimeTick--;
-                if (bomb.TimeTick <= 0)
+                bomb.DecreaseTime();
+                if (bomb.IsReadyToDetonate)
                 {
-                    DestroyBomb(bomb);
-                    Bombs.RemoveAt(i);
+                    bomb.Detonate();
                 }
+            }
+
+            if (TimeSinceLastPowerUp >= TimeToPowerUp * Level)
+            {
+                TimeSinceLastPowerUp = 0;
+                var powerUp = GeneratePowerUp();
+                AddObject(powerUp);
+            }
+            else
+            {
+                TimeSinceLastPowerUp += gameTime.ElapsedGameTime.TotalMilliseconds;
             }
 
             if (TimeSinceLastRespawn >= TimeToRespawn/Level)
@@ -194,6 +222,35 @@ namespace Cervine
                 TimeSinceLastRespawn += gameTime.ElapsedGameTime.TotalMilliseconds;
             }
         }
+
+        private PowerUp GeneratePowerUp()
+        {
+            Random r = new Random();
+            int powerupid = r.Next(4);
+            PowerUp powerUp = null;
+            var position = GenerateNewPosition();
+            while (!IsPositionValid(position) && !IsPositionEmpty(position))
+                position = GenerateNewPosition();
+            switch (powerupid)
+            {
+                case 0: //Food
+                    powerUp = new FoodPowerUp(_foodTexture, position, this);
+                    break;
+                case 1: //Medpack
+                    powerUp = new MedpackPowerUp(_medpackTexture, position, this);
+                    break;
+                case 2: //Tnt + detonator
+                    powerUp = new TntDetonatorPowerUp(_tntDetonatorTexture, position, this, _tntTexture);
+                    break;
+                case 3: //Charging up
+                    powerUp = new ChargingPowerUp(_chargingTexture, position, this);
+                    break;
+            }
+            return powerUp;
+        }
+
+        public double TimeSinceLastPowerUp { get; set; }
+        public double TimeToPowerUp { get; set; }
 
         private EnemySprite GenerateEnemy(int level)
         {
@@ -239,22 +296,7 @@ namespace Cervine
 
         private void DestroyBomb(Bomb bomb)
         {
-            var positions = bomb.GetAffectedPositions();
-            foreach (var position in positions)
-            {
-                for (int i = Drawables.Count - 1; i >= 0; i--)
-                {
-                    var drawable = Drawables[i];
-                    if (drawable.Position.X == position.X && drawable.Position.Y == position.Y)
-                    {
-                        drawable.DecreaseLife();
-                        Drawables.RemoveAt(i);
-                        if (Fields[drawable.Position.X, drawable.Position.Y].Sprite == drawable)
-                            Fields[drawable.Position.X, drawable.Position.Y].Sprite = null;
-                    }
-                }
-            }
-            Fields[bomb.Position.X, bomb.Position.Y].Bomb = null;
+            
         }
         
         public void OnGameOver()
@@ -302,15 +344,15 @@ namespace Cervine
         private Texture2D _hunterEnemyTexture;
         private Texture2D _shooterEnemyTexture;
         private Texture2D _tankEnemyTexture;
+        private Texture2D _foodTexture;
+        private Texture2D _medpackTexture;
+        private Texture2D _tntDetonatorTexture;
+        private Texture2D _chargingTexture;
+        private Texture2D _tntTexture;
 
         public void PlantBomb(Point position)
         {
-            if (Bombs.FirstOrDefault(x => x.Position.X == position.X && x.Position.Y == position.Y) == null)
-            {
-                var bomb = new Bomb(bombTexture2D, position, this);
-                Fields[position.X, position.Y].Bomb = bomb;
-                Bombs.Add(bomb);
-            }
+            
         }
 
         public List<Field> GetAdjacentPositionsForAStar(Field position)
@@ -330,5 +372,125 @@ namespace Cervine
                 list.Add(Fields[pos4.X, pos4.Y]);
             return list;
         }
+
+        public void Plant(Tnt tnt)
+        {
+            if (Bombs.FirstOrDefault(x => x.Position.X == tnt.Position.X && x.Position.Y == tnt.Position.Y) == null)
+            {
+                Fields[tnt.Position.X, tnt.Position.Y].Bomb = tnt;
+                Bombs.Add(tnt);
+            }
+        }
+    }
+
+    public class ChargingPowerUp : PowerUp
+    {
+        public ChargingPowerUp(Texture2D texture2D, Point position, GameBoard board) : base(texture2D, position, board)
+        {
+            this.Life = 15000;
+        }
+    }
+
+    public class TntDetonatorPowerUp : PowerUp
+    {
+        private Texture2D _tntTexture;
+
+        public TntDetonatorPowerUp(Texture2D texture2D, Point position, GameBoard board, 
+            Texture2D tntTexture) : base(texture2D, position, board)
+        {
+            _tntTexture = tntTexture;
+        }
+
+        public bool IsPlanted { get; set; }
+
+        public void Detonate()
+        {
+            var positions = this.GetAffectedPositions();
+            foreach (var position in positions)
+            {
+                foreach (var drawable in board.Drawables)
+                {
+                    if (drawable.Position == position)
+                    {
+                        drawable.DecreaseLife();
+                        drawable.DecreaseLife(); //2 pkt obrazen od tnt, dlatego 2 razy
+                    }
+                }
+            }
+            board.RemoveObject(this);
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+        }
+
+        public void Plant(Point position)
+        {
+            if (board.IsPositionValidExceptPlayer(position))
+            {
+                this.Position = position;
+                var tnt = new Tnt(_tntTexture, position, board);
+                this.Tnt = tnt;
+                board.Plant(tnt);
+            }
+        }
+
+        public Tnt Tnt { get; set; }
+    }
+
+    public class Tnt : Bomb
+    {
+        public bool IsTriggered { get; set; }
+
+        public Tnt(Texture2D tntTexture, Point position, GameBoard board) : base(tntTexture, position, board)
+        {
+        }
+
+        public override Point direction
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool IsReadyToDetonate
+        {
+            get { return IsTriggered; }
+        }
+    }
+
+    public class MedpackPowerUp : PowerUp
+    {
+        public MedpackPowerUp(Texture2D texture2D, Point position, GameBoard board) : base(texture2D, position, board)
+        {
+        }
+    }
+
+    public class FoodPowerUp : PowerUp
+    {
+        public FoodPowerUp(Texture2D texture2D, Point position, GameBoard board) : base(texture2D, position, board)
+        {
+        }
+    }
+
+    public class PowerUp : Sprite
+    {
+        public PowerUp(Texture2D texture2D, Point position, GameBoard board) : base(texture2D, position, board)
+        {
+        }
+
+        public override Point direction
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+           
+        }
+
     }
 }

@@ -59,7 +59,7 @@ namespace Cervine
         public void OnGameOver(object sender, EventArgs e)
         {
             game.GameState = GameState.MainMenu;
-            this.gameBoard.ResetGame();
+            gameBoard.ResetGame();
         }
 
         protected override void LoadContent()
@@ -71,14 +71,21 @@ namespace Cervine
             var tankEnemyTexture = Game.Content.Load<Texture2D>(@"Enemies/tank");
             var bombfireTexture = Game.Content.Load<Texture2D>(@"bombfire");
             var hungerTexture = Game.Content.Load<Texture2D>(@"hungerbar");
-            this.gameBoard = new GameBoard(boardSize, 40, 40, 80, game, gameTimeFont, bombfireTexture, 
-                normalEnemyTexture, hunterEnemyTexture, shooterEnemyTexture, tankEnemyTexture);
+            var foodTexture = Game.Content.Load<Texture2D>(@"food");
+            var medpackTexture = Game.Content.Load<Texture2D>(@"medpack");
+            var tntDetonatorTexture = Game.Content.Load<Texture2D>(@"tntdetonator");
+            var chargingTexture = Game.Content.Load<Texture2D>(@"charging");
+            var tntTexture = Game.Content.Load<Texture2D>(@"tnt");
+            gameBoard = new GameBoard(boardSize, 40, 40, 80, game, gameTimeFont, bombfireTexture,
+                normalEnemyTexture, hunterEnemyTexture, shooterEnemyTexture, tankEnemyTexture, foodTexture,
+                medpackTexture, tntDetonatorTexture, chargingTexture, tntTexture);
             gameBoard.GameOverEvent += OnGameOver;
             //Load the player sprite
             player = new UserControlledSprite(
                 Game.Content.Load<Texture2D>(@"player_transparent"),
                 new Point(0, 0), gameBoard, Game.Content.Load<Texture2D>(@"heart"),
-                hungerTexture);
+                hungerTexture,
+                Game.Content.Load<Texture2D>(@"player_transparent_yellow"));
 
             gameBoard.AddObject(player);
 

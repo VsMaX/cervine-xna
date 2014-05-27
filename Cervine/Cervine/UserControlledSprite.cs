@@ -26,18 +26,23 @@ namespace Cervine
         private Vector2 lastDirection;
         private Vector2 lastPosition;
         public Texture2D HungerTextureImage { get; set; }
+        public Texture2D YellowTextureImage { get; set; }
+
         public int Life { get; set; }
         public int HungerDelay { get; set; }
         public int MaxHungerDelay { get; set; }
         public int Hunger { get; set; }
 
-        public UserControlledSprite(Texture2D texture2D, Point position, GameBoard board, Texture2D lifeTextureImage, Texture2D hungerTextureImage) : base(texture2D, position, board)
+        public UserControlledSprite(Texture2D texture2D, Point position, GameBoard board, Texture2D lifeTextureImage, Texture2D hungerTextureImage,
+            Texture2D yellowUserTexture2D) : base(texture2D, position, board)
         {
             MaxHungerDelay = 60;
             Life = 3;
+            MaxLife = 3;
             Hunger = 200;
             this.LifeTextureImage = lifeTextureImage;
             this.HungerTextureImage = hungerTextureImage;
+            this.YellowTextureImage = yellowUserTexture2D;
         }
 
         public override Point direction
@@ -85,7 +90,33 @@ namespace Cervine
 
                 if (Life < 0)
                 {
-                    board.OnGameOver();
+                    board.GameOver();
+                }
+                if (board.Fields[newPosition.X, newPosition.Y].Sprite is PowerUp)
+                {
+                    var powerup = board.Fields[newPosition.X, newPosition.Y].Sprite as PowerUp;
+                    if (powerup is MedpackPowerUp)
+                    {
+                        if(Life < MaxLife)
+                            this.Life++;
+                    }
+                    else if (powerup is FoodPowerUp)
+                    {
+                        this.Hunger = Math.Min(Hunger + 20, 200);
+                    }
+                    else if(powerup is ChargingPowerUp) //if detonator or charge
+                    {
+                        this.PowerUp = powerup;
+                        var tmpTexture = TextureImage;
+                        TextureImage = YellowTextureImage;
+                        YellowTextureImage = tmpTexture;
+                    }
+                    else
+                    {
+                        this.PowerUp = powerup;
+                    }
+                    
+                    board.RemoveObject(powerup);   
                 }
                 if (board.IsPositionValid(newPosition))
                 {
@@ -99,13 +130,51 @@ namespace Cervine
                     Hunger--;
                 }
             }
+            if (PowerUp != null)
+            {
+                if (PowerUp is ChargingPowerUp)
+                {
+                    PowerUp.Life -= (int)gameTime.ElapsedGameTime.TotalMilliseconds;
+                    if (PowerUp.Life <= 0)
+                    {
+                        PowerUp = null;
+                        var tmpTexture = TextureImage;
+                        TextureImage = YellowTextureImage;
+                        YellowTextureImage = tmpTexture;
+                    }
+                }
+                else // Dynamite
+                {
+                    
+                }
+            }
             Delay = (Delay + 1)%5;
             var key = Keyboard.GetState().GetPressedKeys();
             if (key.Contains(Keys.Space))
             {
-                board.PlantBomb(Position);
+                if (PowerUp is TntDetonatorPowerUp)
+                {
+                    var tnt = PowerUp as TntDetonatorPowerUp;
+                    if (tnt.IsPlanted)
+                    {
+                        tnt.Detonate();
+                        this.PowerUp = null;
+                    }
+                    else
+                    {
+                        tnt.Plant(Position);
+                    }
+                }
+                else
+                {
+                    board.PlantBomb(Position);
+                }
             }
         }
+
+        public decimal MaxLife { get; set; }
+
+        public PowerUp PowerUp { get; set; }
 
         public override void DecreaseLife()
         {
@@ -121,5 +190,10 @@ namespace Cervine
         }
 
         public int LifeDelay { get; set; }
+
+        public bool HasPowerUp
+        {
+            get { return PowerUp != null; }
+        }
     }
 }

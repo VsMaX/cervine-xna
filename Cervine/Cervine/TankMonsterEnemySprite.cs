@@ -27,7 +27,12 @@ namespace Cervine
                 if (path != null)
                     lastPoint = path.LastOrDefault();
                 if (lastPoint != null)
+                {
+                    var oldPosition = Position;
                     Position = new Point(lastPoint.X, lastPoint.Y);
+                    board.ChangePosition(oldPosition, this);
+                }
+                    
                 base.Update(gameTime);
             }
             Delay = (Delay + 1)%25;

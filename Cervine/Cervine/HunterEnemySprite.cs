@@ -26,6 +26,7 @@ namespace Cervine
         {
             if (Delay == 0)
             {
+                var oldPosition = Position;
                 if (IsPlayerInRange)
                 {
                     var astar = new AGwiazdka(board);
@@ -35,7 +36,10 @@ namespace Cervine
                     if(path != null)
                         lastPoint = path.LastOrDefault();
                     if (lastPoint != null)
+                    {
                         Position = new Point(lastPoint.X, lastPoint.Y);
+                        board.ChangePosition(oldPosition, this);
+                    }
                 }
                 else
                 {
@@ -47,7 +51,6 @@ namespace Cervine
                         ChangeDirection();
                     }
                     newPosition = new Point(newPosition.X + _direction.X, newPosition.Y + _direction.Y);
-                    var oldPosition = Position;
                     newPosition = board.AdjustToBoardSize(newPosition);
                     if (board.IsPositionValidExceptPlayer(newPosition))
                     {
