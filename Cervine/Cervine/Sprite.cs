@@ -77,7 +77,7 @@ namespace Cervine
             Life--;
         }
 
-        public List<Point> GetAffectedPositions()
+        public List<Point> GetAffectedPositionsLarge()
         {
             var affectedPositions = new List<Point>();
             int x = Position.X;
@@ -107,7 +107,6 @@ namespace Cervine
             affectedPositions.Add(position10);
             affectedPositions.Add(position11);
             affectedPositions.Add(position12);
-
 
             if ((board.GetSprite(position1) is WallSprite))
             {
@@ -165,5 +164,40 @@ namespace Cervine
             return affectedPositions;
         }
 
+        public List<Point> GetAffectedPositionsSmall()
+        {
+            var affectedPositions = new List<Point>();
+            int x = Position.X;
+            int y = Position.Y;
+
+            var pos1 = new Point(x + 1, y);
+            var pos2 = new Point(x - 1, y);
+            var pos3 = new Point(x, y + 1);
+            var pos4 = new Point(x, y - 1);
+
+            affectedPositions.Add(pos1);
+            affectedPositions.Add(pos2);
+            affectedPositions.Add(pos3);
+            affectedPositions.Add(pos4);
+
+            if ((board.GetSprite(pos1) is WallSprite))
+            {
+                affectedPositions.Remove(pos1);
+            }
+            if ((board.GetSprite(pos2) is WallSprite))
+            {
+                affectedPositions.Remove(pos2);
+            }
+            if ((board.GetSprite(pos3) is WallSprite))
+            {
+                affectedPositions.Remove(pos3);
+            }
+            if ((board.GetSprite(pos4) is WallSprite))
+            {
+                affectedPositions.Remove(pos4);
+            }
+
+            return affectedPositions;
+        }
     }
 }

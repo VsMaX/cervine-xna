@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,7 +35,7 @@ namespace Cervine
 
         public override void DecreaseLife()
         {
-            this.TimeTick = 5;
+            this.TimeTick = 4;
         }
 
         public virtual void DecreaseTime()
@@ -44,7 +45,7 @@ namespace Cervine
 
         public virtual void Detonate()
         {
-            var positions = GetAffectedPositions();
+            var positions = GetAffectedPositionsSmall();
             foreach (var position in positions)
             {
                 for (int i = board.Drawables.Count - 1; i >= 0; i--)
@@ -53,11 +54,16 @@ namespace Cervine
                     if (drawable.Position.X == position.X && drawable.Position.Y == position.Y)
                     {
                         drawable.DecreaseLife();
-
                     }
                 }
             }
             board.Fields[Position.X, Position.Y].Bomb = null;
+            board.Bombs.Remove(this);
+        }
+
+        public virtual List<Point> GetAffectedPositions()
+        {
+            return GetAffectedPositionsSmall();
         }
     }
 }

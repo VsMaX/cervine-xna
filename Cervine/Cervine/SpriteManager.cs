@@ -70,6 +70,7 @@ namespace Cervine
             var shooterEnemyTexture = Game.Content.Load<Texture2D>(@"Enemies/shooter");
             var tankEnemyTexture = Game.Content.Load<Texture2D>(@"Enemies/tank");
             var bombfireTexture = Game.Content.Load<Texture2D>(@"bombfire");
+            var bombTexture = Game.Content.Load<Texture2D>(@"bomb");
             var hungerTexture = Game.Content.Load<Texture2D>(@"hungerbar");
             var foodTexture = Game.Content.Load<Texture2D>(@"food");
             var medpackTexture = Game.Content.Load<Texture2D>(@"medpack");
@@ -85,7 +86,8 @@ namespace Cervine
                 Game.Content.Load<Texture2D>(@"player_transparent"),
                 new Point(0, 0), gameBoard, Game.Content.Load<Texture2D>(@"heart"),
                 hungerTexture,
-                Game.Content.Load<Texture2D>(@"player_transparent_yellow"));
+                Game.Content.Load<Texture2D>(@"player_transparent_yellow"),
+                bombTexture);
 
             gameBoard.AddObject(player);
 

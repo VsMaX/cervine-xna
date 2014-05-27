@@ -23,7 +23,7 @@ namespace Cervine.Content
 
         public override void Update(GameTime gameTime)
         {
-            if (board.Fields[Position.X, Position.Y].Sprite == board.Player)
+            if (this.Position == board.Player.Position)
             {
                 board.Player.DecreaseLife();
             }

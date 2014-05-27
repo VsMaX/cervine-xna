@@ -47,6 +47,7 @@ namespace Cervine
             _medpackTexture = medpackTexture;
             _tntDetonatorTexture = tntDetonatorTexture;
             _chargingTexture = chargingTexture;
+            _tntTexture = tntTexture;
             Fields = new Field[boardSize.X, boardSize.Y];
             Drawables = new List<Sprite>();
             for (int i = 0; i < boardSize.X; i++)
@@ -373,12 +374,12 @@ namespace Cervine
             return list;
         }
 
-        public void Plant(Tnt tnt)
+        public void Plant(Bomb bomb)
         {
-            if (Bombs.FirstOrDefault(x => x.Position.X == tnt.Position.X && x.Position.Y == tnt.Position.Y) == null)
+            if (Bombs.FirstOrDefault(x => x.Position.X == bomb.Position.X && x.Position.Y == bomb.Position.Y) == null)
             {
-                Fields[tnt.Position.X, tnt.Position.Y].Bomb = tnt;
-                Bombs.Add(tnt);
+                Fields[bomb.Position.X, bomb.Position.Y].Bomb = bomb;
+                Bombs.Add(bomb);
             }
         }
     }
@@ -398,6 +399,7 @@ namespace Cervine
         public TntDetonatorPowerUp(Texture2D texture2D, Point position, GameBoard board, 
             Texture2D tntTexture) : base(texture2D, position, board)
         {
+            TextureImage = texture2D;
             _tntTexture = tntTexture;
         }
 
@@ -405,19 +407,7 @@ namespace Cervine
 
         public void Detonate()
         {
-            var positions = this.GetAffectedPositions();
-            foreach (var position in positions)
-            {
-                foreach (var drawable in board.Drawables)
-                {
-                    if (drawable.Position == position)
-                    {
-                        drawable.DecreaseLife();
-                        drawable.DecreaseLife(); //2 pkt obrazen od tnt, dlatego 2 razy
-                    }
-                }
-            }
-            board.RemoveObject(this);
+            Tnt.IsTriggered = true;
         }
 
         public override void Update(GameTime gameTime)
@@ -430,36 +420,13 @@ namespace Cervine
             {
                 this.Position = position;
                 var tnt = new Tnt(_tntTexture, position, board);
+                IsPlanted = true;
                 this.Tnt = tnt;
                 board.Plant(tnt);
             }
         }
 
         public Tnt Tnt { get; set; }
-    }
-
-    public class Tnt : Bomb
-    {
-        public bool IsTriggered { get; set; }
-
-        public Tnt(Texture2D tntTexture, Point position, GameBoard board) : base(tntTexture, position, board)
-        {
-        }
-
-        public override Point direction
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool IsReadyToDetonate
-        {
-            get { return IsTriggered; }
-        }
     }
 
     public class MedpackPowerUp : PowerUp

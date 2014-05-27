@@ -27,6 +27,7 @@ namespace Cervine
         private Vector2 lastPosition;
         public Texture2D HungerTextureImage { get; set; }
         public Texture2D YellowTextureImage { get; set; }
+        public Texture2D BombTexture { get; set; }
 
         public int Life { get; set; }
         public int HungerDelay { get; set; }
@@ -34,7 +35,7 @@ namespace Cervine
         public int Hunger { get; set; }
 
         public UserControlledSprite(Texture2D texture2D, Point position, GameBoard board, Texture2D lifeTextureImage, Texture2D hungerTextureImage,
-            Texture2D yellowUserTexture2D) : base(texture2D, position, board)
+            Texture2D yellowUserTexture2D, Texture2D bombTexture) : base(texture2D, position, board)
         {
             MaxHungerDelay = 60;
             Life = 3;
@@ -43,6 +44,7 @@ namespace Cervine
             this.LifeTextureImage = lifeTextureImage;
             this.HungerTextureImage = hungerTextureImage;
             this.YellowTextureImage = yellowUserTexture2D;
+            this.BombTexture = bombTexture;
         }
 
         public override Point direction
@@ -129,6 +131,28 @@ namespace Cervine
                     HungerDelay = 0;
                     Hunger--;
                 }
+                var key = Keyboard.GetState().GetPressedKeys();
+                if (key.Contains(Keys.Space))
+                {
+                    if (PowerUp is TntDetonatorPowerUp)
+                    {
+                        var tnt = PowerUp as TntDetonatorPowerUp;
+                        if (tnt.IsPlanted)
+                        {
+                            tnt.Detonate();
+                            this.PowerUp = null;
+                        }
+                        else
+                        {
+                            tnt.Plant(Position);
+                        }
+                    }
+                    else
+                    {
+                        var bomb = new Bomb(BombTexture, Position, board);
+                        board.Plant(bomb);
+                    }
+                }
             }
             if (PowerUp != null)
             {
@@ -147,29 +171,9 @@ namespace Cervine
                 {
                     
                 }
+                
             }
             Delay = (Delay + 1)%5;
-            var key = Keyboard.GetState().GetPressedKeys();
-            if (key.Contains(Keys.Space))
-            {
-                if (PowerUp is TntDetonatorPowerUp)
-                {
-                    var tnt = PowerUp as TntDetonatorPowerUp;
-                    if (tnt.IsPlanted)
-                    {
-                        tnt.Detonate();
-                        this.PowerUp = null;
-                    }
-                    else
-                    {
-                        tnt.Plant(Position);
-                    }
-                }
-                else
-                {
-                    board.PlantBomb(Position);
-                }
-            }
         }
 
         public decimal MaxLife { get; set; }

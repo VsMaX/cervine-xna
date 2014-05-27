@@ -96,6 +96,7 @@
     <Compile Include="Sprite.cs" />
     <Compile Include="SpriteManager.cs" />
     <Compile Include="TankMonsterEnemySprite.cs" />
+    <Compile Include="Tnt.cs" />
     <Compile Include="UserControlledSprite.cs" />
     <Compile Include="WallSprite.cs" />
   </ItemGroup>
