@@ -11,12 +11,10 @@ namespace Cervine
 {
     public class NormalEnemySprite : EnemySprite
     {
-        private Random r;
         public NormalEnemySprite(Texture2D textureImage, Point position, GameBoard gameBoard)
             : base(textureImage, position, gameBoard)
         {
-            r = new Random();
-            timeBeforeDirectionChange = 5000;
+            timeBeforeDirectionChange = 3000;
             this.Life = 2;
         }
 
@@ -31,38 +29,21 @@ namespace Cervine
             if (timeElapsed >= timeBeforeDirectionChange)
             {
                 timeElapsed = 0;
-                if (_direction.X == 0)
-                {
-                    if (_direction.Y == 1)
-                    {
-                        _direction = new Point(1, 0);
-                    }
-                    else //_direction.Y == -1
-                    {
-                        _direction = new Point(-1, 0);
-                    }
-                }
-                else
-                {
-                    if (_direction.X == 1)
-                    {
-                        _direction = new Point(0, 1);
-                    }
-                    else //_direction.X == -1
-                    {
-                        _direction = new Point(0, -1);
-                    }
-                }
+                ChangeDirection();
             }
             if (Delay == 0)
             {
                 newPosition = new Point(newPosition.X + _direction.X, newPosition.Y + _direction.Y);
                 var oldPosition = Position;
                 newPosition = board.AdjustToBoardSize(newPosition);
-                if (board.IsPositionValid(newPosition))
+                if (board.IsPositionValidExceptPlayer(newPosition))
                 {
                     Position = newPosition;
                     board.ChangePosition(oldPosition, this);
+                }
+                else
+                {
+                    ChangeDirection();
                 }
             }
             Delay = (Delay + 1)%5;

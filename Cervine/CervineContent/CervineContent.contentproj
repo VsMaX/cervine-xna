@@ -40,13 +40,13 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Enemies\enemy_hunter_transparent.png">
-      <Name>enemy_hunter_transparent</Name>
+    <Compile Include="Enemies\hunter.png">
+      <Name>hunter</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Enemies\enemy_normal_transparent.png">
-      <Name>enemy_normal_transparent</Name>
+    <Compile Include="Enemies\normal.png">
+      <Name>normal</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -179,6 +179,18 @@
   <ItemGroup>
     <Compile Include="bombfire.png">
       <Name>bombfire</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Enemies\shooter.png">
+      <Name>shooter</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Enemies\tank.png">
+      <Name>tank</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

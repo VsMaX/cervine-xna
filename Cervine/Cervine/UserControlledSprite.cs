@@ -25,16 +25,19 @@ namespace Cervine
         // Get direction of sprite based on player input and speed
         private Vector2 lastDirection;
         private Vector2 lastPosition;
+        public Texture2D HungerTextureImage { get; set; }
         public int Life { get; set; }
         public int HungerDelay { get; set; }
         public int MaxHungerDelay { get; set; }
         public int Hunger { get; set; }
 
-        public UserControlledSprite(Texture2D texture2D, Point position, GameBoard board, Texture2D lifeTextureImage) : base(texture2D, position, board)
+        public UserControlledSprite(Texture2D texture2D, Point position, GameBoard board, Texture2D lifeTextureImage, Texture2D hungerTextureImage) : base(texture2D, position, board)
         {
-            MaxHungerDelay = 600;
+            MaxHungerDelay = 60;
             Life = 3;
+            Hunger = 200;
             this.LifeTextureImage = lifeTextureImage;
+            this.HungerTextureImage = hungerTextureImage;
         }
 
         public override Point direction
@@ -90,17 +93,10 @@ namespace Cervine
                     Position = newPosition;
                     board.ChangePosition(oldPosition, this);
                 }
-                else
-                {
-                    if (board.Fields[newPosition.X, newPosition.Y].Sprite is EnemySprite)
-                    {
-                        this.Life--;
-                    }
-                }
                 if (HungerDelay >= MaxHungerDelay)
                 {
                     HungerDelay = 0;
-                    Hunger++;
+                    Hunger--;
                 }
             }
             Delay = (Delay + 1)%5;
@@ -110,5 +106,20 @@ namespace Cervine
                 board.PlantBomb(Position);
             }
         }
+
+        public override void DecreaseLife()
+        {
+            if (LifeDelay == 0)
+            {
+                Life--;
+                if (Life <= 0)
+                {
+                    board.GameOver();
+                }
+            }
+            LifeDelay = (LifeDelay + 1)%10;
+        }
+
+        public int LifeDelay { get; set; }
     }
 }

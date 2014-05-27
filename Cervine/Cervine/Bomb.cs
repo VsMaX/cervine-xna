@@ -117,7 +117,7 @@ namespace Cervine
 
         public override void DecreaseLife()
         {
-            this.TimeTick = 20;
+            this.TimeTick = 5;
         }
     }
 }

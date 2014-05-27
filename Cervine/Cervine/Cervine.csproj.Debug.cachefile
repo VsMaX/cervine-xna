@@ -1,7 +1,5 @@
 Content\background.xnb
 Content\bomb.xnb
-Content\Enemies\enemy_hunter_transparent.xnb
-Content\Enemies\enemy_normal_transparent.xnb
 Content\heart.xnb
 Content\hungerbar.xnb
 Content\player_transparent.xnb
@@ -27,3 +25,7 @@ Content\wall.xnb
 Content\wall_destroyable.xnb
 Content\bombfire.xnb
 Content\arial.xnb
+Content\Enemies\hunter.xnb
+Content\Enemies\normal.xnb
+Content\Enemies\shooter.xnb
+Content\Enemies\tank.xnb

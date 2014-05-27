@@ -31,7 +31,7 @@ namespace Cervine
         public Point boardSize;
         public MainMenu mainMenu;
         public MainMenu pauseMenu;
-        public MainMenu gameScoresMenu;
+        public ScoresMenu gameScoresMenu;
         public TimeSpan gameTimeElapsed;
         public SpriteFont gameTimeFont;
         public CervineGame game;
@@ -65,23 +65,24 @@ namespace Cervine
         protected override void LoadContent()
         {
             gameTimeFont = Game.Content.Load<SpriteFont>(@"arial");
-
-            this.gameBoard = new GameBoard(boardSize, 40, 40, 80, game, gameTimeFont, Game.Content.Load<Texture2D>(@"bombfire"));
+            var normalEnemyTexture = Game.Content.Load<Texture2D>(@"Enemies/normal");
+            var hunterEnemyTexture = Game.Content.Load<Texture2D>(@"Enemies/hunter");
+            var shooterEnemyTexture = Game.Content.Load<Texture2D>(@"Enemies/shooter");
+            var tankEnemyTexture = Game.Content.Load<Texture2D>(@"Enemies/tank");
+            var bombfireTexture = Game.Content.Load<Texture2D>(@"bombfire");
+            var hungerTexture = Game.Content.Load<Texture2D>(@"hungerbar");
+            this.gameBoard = new GameBoard(boardSize, 40, 40, 80, game, gameTimeFont, bombfireTexture, 
+                normalEnemyTexture, hunterEnemyTexture, shooterEnemyTexture, tankEnemyTexture);
             gameBoard.GameOverEvent += OnGameOver;
             //Load the player sprite
             player = new UserControlledSprite(
                 Game.Content.Load<Texture2D>(@"player_transparent"),
-                new Point(0, 0), gameBoard, Game.Content.Load<Texture2D>(@"heart"));
+                new Point(0, 0), gameBoard, Game.Content.Load<Texture2D>(@"heart"),
+                hungerTexture);
 
             gameBoard.AddObject(player);
 
             backgroundImage = Game.Content.Load<Texture2D>(@"background");
-
-            gameBoard.AddObject(new NormalEnemySprite(Game.Content.Load<Texture2D>(@"Enemies/enemy_normal_transparent"),
-                new Point(19, 14), gameBoard));
-
-            gameBoard.AddObject(new HunterEnemySprite(Game.Content.Load<Texture2D>(@"Enemies/enemy_hunter_transparent"),
-                new Point(5,0), gameBoard));
             
             var r = new Random();
             var wallSprite = Game.Content.Load<Texture2D>(@"wall");
@@ -147,6 +148,7 @@ namespace Cervine
 
             mainMenu = new MainMenu(game, menuSpriteList);
             pauseMenu = new MainMenu(game, pauseMenuSpriteList);
+            //gameScoresMenu = new ScoresMenu(game, scoresList);
             base.LoadContent();
         }
 
@@ -234,5 +236,29 @@ namespace Cervine
             
             gameBoard.Draw(gameTime, spriteBatch);
         }
+    }
+
+    public class ScoresMenu
+    {
+        public ScoresMenu(CervineGame cervineGame, List<Score> scoresList)
+        {
+
+        }
+
+        public void Update(GameTime gameTime, Rectangle clientBounds)
+        {
+            
+        }
+
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        {
+            
+        }
+    }
+
+    public class Score
+    {
+        public string Name { get; set; }
+        public int Time { get; set; }
     }
 }
