@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Configuration;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Cervine.Content;
@@ -25,6 +26,7 @@ namespace Cervine
         // Get direction of sprite based on player input and speed
         private Vector2 lastDirection;
         private Vector2 lastPosition;
+        private Texture2D _destroyableWallTexture;
         public Texture2D HungerTextureImage { get; set; }
         public Texture2D YellowTextureImage { get; set; }
         public Texture2D BombTexture { get; set; }
@@ -35,16 +37,17 @@ namespace Cervine
         public int Hunger { get; set; }
 
         public UserControlledSprite(Texture2D texture2D, Point position, GameBoard board, Texture2D lifeTextureImage, Texture2D hungerTextureImage,
-            Texture2D yellowUserTexture2D, Texture2D bombTexture) : base(texture2D, position, board)
+            Texture2D yellowUserTexture2D, Texture2D bombTexture, Texture2D destroyableWallTexture) : base(texture2D, position, board)
         {
             MaxHungerDelay = 30;
             Life = 3;
             MaxLife = 3;
-            Hunger = 200;
+            Hunger = 150;
             this.LifeTextureImage = lifeTextureImage;
             this.HungerTextureImage = hungerTextureImage;
             this.YellowTextureImage = yellowUserTexture2D;
             this.BombTexture = bombTexture;
+            _destroyableWallTexture = destroyableWallTexture;
         }
 
         public override Point direction
@@ -104,7 +107,21 @@ namespace Cervine
                     }
                     else if (powerup is FoodPowerUp)
                     {
-                        this.Hunger = Math.Min(Hunger + 20, 200);
+                        this.Hunger = Math.Min(Hunger + 20, 150);
+                    }
+                    else if (powerup is DebrisPowerUp)
+                    {
+                        if (this.PowerUp is DebrisPowerUp)
+                        {
+                            var playerDebris = PowerUp as DebrisPowerUp;
+                            playerDebris.IncreaseDebris();
+                        }
+                        else
+                        {
+                            var debrisPowerUp = powerup as DebrisPowerUp;
+                            debrisPowerUp.DebrisCount = 1;
+                            this.PowerUp = debrisPowerUp;
+                        }
                     }
                     else
                     {
@@ -113,6 +130,64 @@ namespace Cervine
                     
                     board.RemoveObject(powerup);   
                 }
+
+                var key = Keyboard.GetState().GetPressedKeys();
+                if (key.Contains(Keys.X) && PowerUp is DebrisPowerUp) // plant wall
+                {
+                    var debris = PowerUp as DebrisPowerUp;
+                    if (debris.DebrisCount > 1)
+                    {
+                        Point wallPos = new Point();
+                        if (key.Contains(Keys.Left))
+                        {
+                            wallPos = new Point(Position.X - 1, Position.Y);
+                            if (board.IsPositionValid(wallPos))
+                            {
+                                var destroyableWall = new DestroyableWallSprite(_destroyableWallTexture, wallPos, board);
+                                board.AddObject(destroyableWall);
+                                debris.DebrisCount -= 2;
+                                if (debris.DebrisCount == 0)
+                                    PowerUp = null;
+                            }
+                        }
+                        if (key.Contains(Keys.Right))
+                        {
+                            wallPos = new Point(Position.X + 1, Position.Y);
+                            if (board.IsPositionValid(wallPos))
+                            {
+                                var destroyableWall = new DestroyableWallSprite(_destroyableWallTexture, wallPos, board);
+                                board.AddObject(destroyableWall);
+                                debris.DebrisCount -= 2;
+                                if (debris.DebrisCount == 0)
+                                    PowerUp = null;
+                            }
+                        }
+                        if (key.Contains(Keys.Up))
+                        {
+                            wallPos = new Point(Position.X, Position.Y - 1);
+                            if (board.IsPositionValid(wallPos))
+                            {
+                                var destroyableWall = new DestroyableWallSprite(_destroyableWallTexture, wallPos, board);
+                                board.AddObject(destroyableWall);
+                                debris.DebrisCount -= 2;
+                                if (debris.DebrisCount == 0)
+                                    PowerUp = null;
+                            }
+                        }
+                        if (key.Contains(Keys.Down))
+                        {
+                            wallPos = new Point(Position.X, Position.Y + 1);
+                            if (board.IsPositionValid(wallPos))
+                            {
+                                var destroyableWall = new DestroyableWallSprite(_destroyableWallTexture, wallPos, board);
+                                board.AddObject(destroyableWall);
+                                debris.DebrisCount -= 2;
+                                if (debris.DebrisCount == 0)
+                                    PowerUp = null;
+                            }
+                        }
+                    }
+                }
                 if (board.IsPositionValid(newPosition))
                 {
                     var oldPosition = Position;
@@ -120,8 +195,6 @@ namespace Cervine
                     board.ChangePosition(oldPosition, this);
                 }
                 
-                
-                var key = Keyboard.GetState().GetPressedKeys();
                 if (key.Contains(Keys.Space))
                 {
                     if (PowerUp is TntDetonatorPowerUp)
@@ -146,6 +219,7 @@ namespace Cervine
                         }
                     }
                 }
+                
                 if (HungerDelay >= MaxHungerDelay)
                 {
                     HungerDelay = 0;
@@ -170,7 +244,6 @@ namespace Cervine
                 {
                     
                 }
-                
             }
             Delay = (Delay + 1)%5;
         }

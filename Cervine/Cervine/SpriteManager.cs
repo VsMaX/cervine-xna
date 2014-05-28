@@ -77,9 +77,15 @@ namespace Cervine
             var tntDetonatorTexture = Game.Content.Load<Texture2D>(@"tntdetonator");
             var chargingTexture = Game.Content.Load<Texture2D>(@"charging");
             var tntTexture = Game.Content.Load<Texture2D>(@"tnt");
+            var debrisTexture1 = Game.Content.Load<Texture2D>(@"debris1");
+            var debrisTexture2 = Game.Content.Load<Texture2D>(@"debris2");
+            var debrisTexture3 = Game.Content.Load<Texture2D>(@"debris3");
+            var debrisTexture4 = Game.Content.Load<Texture2D>(@"debris4");
+            var wallDestroyableTexture = Game.Content.Load<Texture2D>(@"wall_destroyable");
+
             gameBoard = new GameBoard(boardSize, 40, 40, 80, this, gameTimeFont, bombfireTexture,
                 normalEnemyTexture, hunterEnemyTexture, shooterEnemyTexture, tankEnemyTexture, foodTexture,
-                medpackTexture, tntDetonatorTexture, chargingTexture, tntTexture, bombTexture);
+                medpackTexture, tntDetonatorTexture, chargingTexture, tntTexture, bombTexture, debrisTexture1, debrisTexture2, debrisTexture3, debrisTexture4, wallDestroyableTexture);
             gameBoard.GameOverEvent += OnGameOver;
             //Load the player sprite
             player = new UserControlledSprite(
@@ -87,7 +93,8 @@ namespace Cervine
                 new Point(0, 0), gameBoard, Game.Content.Load<Texture2D>(@"heart"),
                 hungerTexture,
                 Game.Content.Load<Texture2D>(@"player_transparent_yellow"),
-                bombTexture);
+                bombTexture,
+                wallDestroyableTexture);
 
             gameBoard.AddObject(player);
 
@@ -108,7 +115,6 @@ namespace Cervine
                 }
             }
 
-            var wallDestroyableSprite = Game.Content.Load<Texture2D>(@"wall_destroyable");
             //generate random destroyable walls
             for (int i = 0; i < 50; i++)
             {
@@ -117,7 +123,7 @@ namespace Cervine
                 var position = new Point(X, Y);
                 if (gameBoard.IsPositionValid(position) && position.X >= 3 && position.Y >= 3)
                 {
-                    var destrWallSprite = new DestroyableWallSprite(wallDestroyableSprite,
+                    var destrWallSprite = new DestroyableWallSprite(wallDestroyableTexture,
                     new Point(X, Y), gameBoard);
                     gameBoard.AddObject(destrWallSprite);
                 }
@@ -247,7 +253,7 @@ namespace Cervine
             // UI
             // game time
             gameTimeElapsed += gameTime.ElapsedGameTime;
-            spriteBatch.DrawString(gameTimeFont, gameTimeElapsed.TotalSeconds.ToString("0000"), new Vector2(20, 10), Color.White);
+            spriteBatch.DrawString(gameTimeFont, gameTimeElapsed.TotalSeconds.ToString("0000"), new Vector2(130, 10), Color.White);
             
             gameBoard.Draw(gameTime, spriteBatch);
         }

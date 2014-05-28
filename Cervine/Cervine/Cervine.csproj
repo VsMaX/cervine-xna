@@ -79,6 +79,7 @@
     <Compile Include="AStar\PriorityQueueNode.cs" />
     <Compile Include="Bomb.cs" />
     <Compile Include="CervineGame.cs" />
+    <Compile Include="DebrisPowerUp.cs" />
     <Compile Include="DestroyableWallSprite.cs" />
     <Compile Include="EnemySprite.cs" />
     <Compile Include="Field.cs" />

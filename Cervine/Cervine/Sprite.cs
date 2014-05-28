@@ -11,7 +11,7 @@ namespace Cervine
     public abstract class Sprite
     {
         // Stuff needed to draw the sprite
-        public Texture2D TextureImage { get; set; }
+        public virtual Texture2D TextureImage { get; set; }
         public int Delay { get; set; }
         protected Point frameSize;
         protected Point currentFrame;

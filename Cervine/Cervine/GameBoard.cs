@@ -36,7 +36,8 @@ namespace Cervine
         public GameBoard(Point boardSize, float frameWidth, float frameHeight, float menuBarHeight, SpriteManager spriteManager, SpriteFont font, 
             Texture2D bombFire, Texture2D normalEnemyTexture, Texture2D hunterEnemyTexture, Texture2D shooterEnemyTexture,
             Texture2D tankEnemyTexture, Texture2D foodTexture, Texture2D medpackTexture, Texture2D tntDetonatorTexture,
-            Texture2D chargingTexture, Texture2D tntTexture, Texture2D bombTexture2D)
+            Texture2D chargingTexture, Texture2D tntTexture, Texture2D bombTexture2D, Texture2D debrisTexture1, Texture2D debrisTexture2, Texture2D debrisTexture3,
+            Texture2D debrisTexture4, Texture2D destroyableWallTexture)
         {
             _bombFire = bombFire;
             _normalEnemyTexture = normalEnemyTexture;
@@ -49,6 +50,11 @@ namespace Cervine
             _chargingTexture = chargingTexture;
             _tntTexture = tntTexture;
             _bombTexture2D = bombTexture2D;
+            _debrisTexture1 = debrisTexture1;
+            _debrisTexture2 = debrisTexture2;
+            _debrisTexture3 = debrisTexture3;
+            _debrisTexture4 = debrisTexture4;
+            _destroyableWallTexture = destroyableWallTexture;
             Fields = new Field[boardSize.X, boardSize.Y];
             Drawables = new List<Sprite>();
             for (int i = 0; i < boardSize.X; i++)
@@ -69,6 +75,7 @@ namespace Cervine
             Level = 4;
             TimeToRespawn = 200000;
             TimeToPowerUp = 5000;
+            TimeToDestroyableWall = 7000;
 
             AddObject(new NormalEnemySprite(_normalEnemyTexture,
                 new Point(19, 14), this));
@@ -170,21 +177,17 @@ namespace Cervine
             //draw life
             for (int i = 0; i < Player.Life; i++)
             {
-                spriteBatch.Draw(Player.LifeTextureImage, new Vector2(50 * i + 200, 10), Color.White);
+                spriteBatch.Draw(Player.LifeTextureImage, new Vector2(50 * i + 600, 10), Color.White);
             }
             //draw hunger bar
             for (int i = 0; i < Player.Hunger; i++)
             {
-                spriteBatch.Draw(Player.HungerTextureImage, new Vector2(i + 450, 10), Color.White);
+                spriteBatch.Draw(Player.HungerTextureImage, new Vector2(i + 600, 45), Color.White);
             }
             //powerup
             if (Player.HasPowerUp)
             {
-                spriteBatch.Draw(Player.PowerUp.TextureImage, new Vector2(680, 10), Color.White);
-                if (Player.PowerUp is ChargingPowerUp)
-                {
-                    
-                }
+                spriteBatch.Draw(Player.PowerUp.TextureImage, new Vector2(340, 5), Color.White);
             }
         }
 
@@ -212,6 +215,11 @@ namespace Cervine
                     Drawables.RemoveAt(i);
                     if (Fields[drawable.Position.X, drawable.Position.Y].Sprite == drawable)
                         Fields[drawable.Position.X, drawable.Position.Y].Sprite = null;
+                    if (drawable is DestroyableWallSprite)
+                    {
+                        var debris = new DebrisPowerUp(_debrisTexture1, _debrisTexture2, _debrisTexture3, _debrisTexture4, drawable.Position, this);
+                        AddObject(debris);
+                    }
                 }
             }
 
@@ -246,7 +254,31 @@ namespace Cervine
             {
                 TimeSinceLastRespawn += gameTime.ElapsedGameTime.TotalMilliseconds;
             }
+            if (TimeSinceLastDestroyableWall >= TimeToDestroyableWall)
+            {
+                var destroyableWall = GenerateDestroyableWall();
+                AddObject(destroyableWall);
+                TimeSinceLastDestroyableWall = 0;
+            }
+            else
+            {
+                TimeSinceLastDestroyableWall += gameTime.ElapsedGameTime.TotalMilliseconds;
+            }
         }
+
+        private Sprite GenerateDestroyableWall()
+        {
+            var position = GenerateNewPosition();
+            while (!IsPositionValid(position) && !IsPositionEmpty(position) && Math.Abs(position.X - Player.Position.X) < 3 && Math.Abs(position.Y - Player.Position.Y) < 3)
+                position = GenerateNewPosition();
+
+            var wall = new DestroyableWallSprite(_destroyableWallTexture, position, this);
+            return wall;
+        }
+
+        public double TimeToDestroyableWall { get; set; }
+
+        public double TimeSinceLastDestroyableWall { get; set; }
 
         private PowerUp GeneratePowerUp()
         {
@@ -359,6 +391,11 @@ namespace Cervine
         private Texture2D _chargingTexture;
         private Texture2D _tntTexture;
         private SpriteManager _spriteManager;
+        private Texture2D _debrisTexture1;
+        private Texture2D _debrisTexture2;
+        private Texture2D _debrisTexture3;
+        private Texture2D _debrisTexture4;
+        private Texture2D _destroyableWallTexture;
 
         public void PlantBomb(Point position)
         {
@@ -467,6 +504,5 @@ namespace Cervine
         {
            
         }
-
     }
 }
