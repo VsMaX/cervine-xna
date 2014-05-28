@@ -23,11 +23,17 @@ namespace Cervine.Content
 
         public override void Update(GameTime gameTime)
         {
-            if (this.Position == board.Player.Position)
+            if (Delay2 == 0)
             {
-                board.Player.DecreaseLife();
+                if (this.Position == board.Player.Position)
+                {
+                    board.Player.DecreaseLife();
+                }
             }
+            Delay2 = (Delay2 + 1)%20;
         }
+
+        public int Delay2 { get; set; }
 
         protected Point _direction;
 

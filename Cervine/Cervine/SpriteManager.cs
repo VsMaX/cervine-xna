@@ -77,9 +77,9 @@ namespace Cervine
             var tntDetonatorTexture = Game.Content.Load<Texture2D>(@"tntdetonator");
             var chargingTexture = Game.Content.Load<Texture2D>(@"charging");
             var tntTexture = Game.Content.Load<Texture2D>(@"tnt");
-            gameBoard = new GameBoard(boardSize, 40, 40, 80, game, gameTimeFont, bombfireTexture,
+            gameBoard = new GameBoard(boardSize, 40, 40, 80, this, gameTimeFont, bombfireTexture,
                 normalEnemyTexture, hunterEnemyTexture, shooterEnemyTexture, tankEnemyTexture, foodTexture,
-                medpackTexture, tntDetonatorTexture, chargingTexture, tntTexture);
+                medpackTexture, tntDetonatorTexture, chargingTexture, tntTexture, bombTexture);
             gameBoard.GameOverEvent += OnGameOver;
             //Load the player sprite
             player = new UserControlledSprite(
@@ -96,12 +96,12 @@ namespace Cervine
             var r = new Random();
             var wallSprite = Game.Content.Load<Texture2D>(@"wall");
             //generate random walls
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 30; i++)
             {
                 int X = r.Next(boardSize.X);
                 int Y = r.Next(boardSize.Y);
                 var position = new Point(X, Y);
-                if (gameBoard.IsPositionValid(position))
+                if (gameBoard.IsPositionValid(position) && position.X >= 3 && position.Y >= 3)
                 {
                     gameBoard.AddObject(new WallSprite(wallSprite, new Point(X, Y),
                         gameBoard));
@@ -110,12 +110,12 @@ namespace Cervine
 
             var wallDestroyableSprite = Game.Content.Load<Texture2D>(@"wall_destroyable");
             //generate random destroyable walls
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 50; i++)
             {
                 int X = r.Next(boardSize.X);
                 int Y = r.Next(boardSize.Y);
                 var position = new Point(X, Y);
-                if (gameBoard.IsPositionValid(position))
+                if (gameBoard.IsPositionValid(position) && position.X >= 3 && position.Y >= 3)
                 {
                     var destrWallSprite = new DestroyableWallSprite(wallDestroyableSprite,
                     new Point(X, Y), gameBoard);
@@ -157,8 +157,14 @@ namespace Cervine
 
             mainMenu = new MainMenu(game, menuSpriteList);
             pauseMenu = new MainMenu(game, pauseMenuSpriteList);
-            //gameScoresMenu = new ScoresMenu(game, scoresList);
+            
+            gameScoresMenu = new ScoresMenu(this.game, new List<Score>(), gameTimeFont);
             base.LoadContent();
+        }
+
+        public void OnGameOver()
+        {
+            
         }
 
         /// <summary>
@@ -249,19 +255,53 @@ namespace Cervine
 
     public class ScoresMenu
     {
-        public ScoresMenu(CervineGame cervineGame, List<Score> scoresList)
-        {
+        private SpriteFont _font;
+        private List<Score> _scoresList;
 
+        public ScoresMenu(CervineGame cervineGame, List<Score> scoresList, SpriteFont font)
+        {
+            this._font = font;
+            this._scoresList = scoresList;
         }
+
+        public void GetHighScoresUserName(int score)
+        {
+            var scores = new Score();
+            scores.Time = score;
+            this.GetUserName = true;
+            this.Score = scores;
+            this._scoresList.Add(Score);
+        }
+
+        public Score Score { get; set; }
+        public bool GetUserName { get; set; }
 
         public void Update(GameTime gameTime, Rectangle clientBounds)
         {
-            
+            if (GetUserName)
+            {
+                var keyboard = Keyboard.GetState().GetPressedKeys();
+                var key = keyboard.FirstOrDefault();
+                if (key != Keys.Enter)
+                {
+                    Score.Name += key.ToString();
+                }
+                else
+                {
+                    GetUserName = false;
+                }
+            }
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            
+            var scores = _scoresList.OrderByDescending(x => x.Time).ToList();
+            for (int i = 0; i < scores.Count; i++)
+            {
+                var score = scores[i];
+                spriteBatch.DrawString(_font, score.Name, new Vector2(20, 10 + 50 * i), Color.White);
+                spriteBatch.DrawString(_font, score.Time.ToString("0000"), new Vector2(550, 10 + 50* i), Color.White);
+            }
         }
     }
 

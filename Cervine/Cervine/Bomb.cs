@@ -44,8 +44,9 @@ namespace Cervine
         }
 
         public virtual void Detonate()
-        {
-            var positions = GetAffectedPositionsSmall();
+        { 
+             var positions = GetAffectedPositions();
+
             foreach (var position in positions)
             {
                 for (int i = board.Drawables.Count - 1; i >= 0; i--)
@@ -56,6 +57,14 @@ namespace Cervine
                         drawable.DecreaseLife();
                     }
                 }
+                for (int i = 0; i < board.Bombs.Count; i++)
+                {
+                    var bomb = board.Bombs[i];
+                    if (bomb.Position.X == position.X && bomb.Position.Y == position.Y)
+                    {
+                        bomb.DecreaseLife();
+                    }
+                }
             }
             board.Fields[Position.X, Position.Y].Bomb = null;
             board.Bombs.Remove(this);
@@ -63,7 +72,14 @@ namespace Cervine
 
         public virtual List<Point> GetAffectedPositions()
         {
-            return GetAffectedPositionsSmall();
+            if (board.Player.PowerUp is ChargingPowerUp)
+            {
+                return GetAffectedPositionsLarge();
+            }
+            else
+            {
+                return GetAffectedPositionsSmall();
+            }
         }
     }
 }

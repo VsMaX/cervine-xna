@@ -170,10 +170,10 @@ namespace Cervine
             int x = Position.X;
             int y = Position.Y;
 
-            var pos1 = new Point(x + 1, y);
-            var pos2 = new Point(x - 1, y);
-            var pos3 = new Point(x, y + 1);
-            var pos4 = new Point(x, y - 1);
+            var pos1 = board.AdjustToBoardSize(new Point(x + 1, y));
+            var pos2 = board.AdjustToBoardSize(new Point(x - 1, y));
+            var pos3 = board.AdjustToBoardSize(new Point(x, y + 1));
+            var pos4 = board.AdjustToBoardSize(new Point(x, y - 1));
 
             affectedPositions.Add(pos1);
             affectedPositions.Add(pos2);

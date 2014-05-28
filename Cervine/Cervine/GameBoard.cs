@@ -33,10 +33,10 @@ namespace Cervine
             get { return Drawables.FirstOrDefault(x => x is UserControlledSprite) as UserControlledSprite; }
         }
 
-        public GameBoard(Point boardSize, float frameWidth, float frameHeight, float menuBarHeight, CervineGame game, SpriteFont font, 
+        public GameBoard(Point boardSize, float frameWidth, float frameHeight, float menuBarHeight, SpriteManager spriteManager, SpriteFont font, 
             Texture2D bombFire, Texture2D normalEnemyTexture, Texture2D hunterEnemyTexture, Texture2D shooterEnemyTexture,
             Texture2D tankEnemyTexture, Texture2D foodTexture, Texture2D medpackTexture, Texture2D tntDetonatorTexture,
-            Texture2D chargingTexture, Texture2D tntTexture)
+            Texture2D chargingTexture, Texture2D tntTexture, Texture2D bombTexture2D)
         {
             _bombFire = bombFire;
             _normalEnemyTexture = normalEnemyTexture;
@@ -48,6 +48,7 @@ namespace Cervine
             _tntDetonatorTexture = tntDetonatorTexture;
             _chargingTexture = chargingTexture;
             _tntTexture = tntTexture;
+            _bombTexture2D = bombTexture2D;
             Fields = new Field[boardSize.X, boardSize.Y];
             Drawables = new List<Sprite>();
             for (int i = 0; i < boardSize.X; i++)
@@ -62,10 +63,10 @@ namespace Cervine
             FrameWidth = frameWidth;
             FrameHeight = frameHeight;
             MenuBarHeight = menuBarHeight;
-            _game = game;
+            _spriteManager = spriteManager;
             this.font = font;
             Bombs = new List<Bomb>();
-            Level = 1;
+            Level = 4;
             TimeToRespawn = 200000;
             TimeToPowerUp = 5000;
 
@@ -130,8 +131,25 @@ namespace Cervine
             {
                 var drawable = Drawables[i];
                 var position = drawable.Position;
-                spriteBatch.Draw(drawable.TextureImage, new Vector2(FrameWidth * position.X, FrameHeight * position.Y + MenuBarHeight)
-                    , Color.White);
+                if (drawable is UserControlledSprite)
+                {
+                    var player = drawable as UserControlledSprite;
+                    if (player.PowerUp is ChargingPowerUp)
+                    {
+                        spriteBatch.Draw(player.YellowTextureImage, new Vector2(FrameWidth * position.X, FrameHeight * position.Y + MenuBarHeight)
+                            , Color.White);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(player.TextureImage, new Vector2(FrameWidth * position.X, FrameHeight * position.Y + MenuBarHeight)
+                            , Color.White);
+                    }
+                }
+                else
+                {
+                    spriteBatch.Draw(drawable.TextureImage, new Vector2(FrameWidth * position.X, FrameHeight * position.Y + MenuBarHeight)
+                        ,Color.White);
+                }
             }
 
             for (int i = Bombs.Count - 1; i >= 0; i--)
@@ -160,8 +178,14 @@ namespace Cervine
                 spriteBatch.Draw(Player.HungerTextureImage, new Vector2(i + 450, 10), Color.White);
             }
             //powerup
-            if(Player.HasPowerUp)
-                spriteBatch.Draw(Player.PowerUp.TextureImage, new Vector2(570, 10), Color.White);
+            if (Player.HasPowerUp)
+            {
+                spriteBatch.Draw(Player.PowerUp.TextureImage, new Vector2(680, 10), Color.White);
+                if (Player.PowerUp is ChargingPowerUp)
+                {
+                    
+                }
+            }
         }
 
         public Point AdjustToBoardSize(Point position)
@@ -256,7 +280,7 @@ namespace Cervine
         private EnemySprite GenerateEnemy(int level)
         {
             var position = GenerateNewPosition();
-            while (!IsPositionValid(position) && !IsPositionEmpty(position))
+            while (!IsPositionValid(position) && !IsPositionEmpty(position) && Math.Abs(position.X - Player.Position.X) < 3 && Math.Abs(position.Y - Player.Position.Y) < 3)
                 position = GenerateNewPosition();
 
             Random r = new Random();
@@ -294,11 +318,6 @@ namespace Cervine
         {
             return Fields[position.X, position.Y].Sprite;
         }
-
-        private void DestroyBomb(Bomb bomb)
-        {
-            
-        }
         
         public void OnGameOver()
         {
@@ -310,7 +329,6 @@ namespace Cervine
 
         public void GameOver()
         {
-            this._game.GameState = GameState.GameOver;
         }
 
         public void ResetGame()
@@ -329,16 +347,6 @@ namespace Cervine
             }
         }
 
-        private Texture2D bombTexture2D
-        {
-            get
-            {
-                if (_bombTexture2D == null)
-                    _bombTexture2D = _game.Content.Load<Texture2D>(@"bomb");
-                return _bombTexture2D;
-            }
-        }
-
         private Texture2D _bombTexture2D;
         private Texture2D _bombFire;
         private Texture2D _normalEnemyTexture;
@@ -350,6 +358,7 @@ namespace Cervine
         private Texture2D _tntDetonatorTexture;
         private Texture2D _chargingTexture;
         private Texture2D _tntTexture;
+        private SpriteManager _spriteManager;
 
         public void PlantBomb(Point position)
         {

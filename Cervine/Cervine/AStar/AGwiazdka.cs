@@ -36,25 +36,26 @@ namespace Cervine
                     return BacktracePath(unit);
                 }
 
-                var neighbors = gameBoard.GetAdjacentPositionsForAStar(unit).ToList();
-                foreach (var neighbor in neighbors)
+                var positions = gameBoard.GetAdjacentPositionsForAStar(unit).ToList();
+                foreach (var position in positions)
                 {
-                    if (neighbor.Closed) continue;
-
-                    var distance = unit.G + 1;
-                    if (!neighbor.Opened || distance < neighbor.G)
+                    if (!position.Closed)
                     {
-                        neighbor.G = distance;
-                        neighbor.H = ManhattanHeuristic(neighbor, end);
-                        neighbor.Priority = neighbor.G + neighbor.H;
-                        neighbor.Parent = unit;
-                        if (!neighbor.Opened)
+                        var distance = unit.G + 1;
+                        if (!position.Opened || distance < position.G)
                         {
-                            openList.Enqueue(neighbor, neighbor.Priority);
-                            neighbor.Opened = true;
+                            position.G = distance;
+                            position.H = ManhattanHeuristic(position, end);
+                            position.Priority = position.G + position.H;
+                            position.Parent = unit;
+                            if (!position.Opened)
+                            {
+                                openList.Enqueue(position, position.Priority);
+                                position.Opened = true;
+                            }
+                            else
+                                openList.UpdatePriority(position, position.Priority);
                         }
-                        else
-                            openList.UpdatePriority(neighbor, neighbor.Priority);
                     }
                 }
             }

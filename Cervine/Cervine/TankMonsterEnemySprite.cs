@@ -32,11 +32,9 @@ namespace Cervine
                     Position = new Point(lastPoint.X, lastPoint.Y);
                     board.ChangePosition(oldPosition, this);
                 }
-                    
-                base.Update(gameTime);
             }
-            Delay = (Delay + 1)%25;
             base.Update(gameTime);
+            Delay = (Delay + 1)%25;
         }
     }
 }

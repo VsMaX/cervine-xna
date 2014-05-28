@@ -62,10 +62,13 @@ namespace Cervine
                         ChangeDirection();
                     }
                 }
-                base.Update(gameTime);
+                
             }
+            base.Update(gameTime);
             Delay = (Delay + 1) % 20;
         }
+
+        public int Delay2 { get; set; }
 
         public bool IsPlayerInRange
         {

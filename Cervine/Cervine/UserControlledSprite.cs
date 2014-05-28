@@ -37,7 +37,7 @@ namespace Cervine
         public UserControlledSprite(Texture2D texture2D, Point position, GameBoard board, Texture2D lifeTextureImage, Texture2D hungerTextureImage,
             Texture2D yellowUserTexture2D, Texture2D bombTexture) : base(texture2D, position, board)
         {
-            MaxHungerDelay = 60;
+            MaxHungerDelay = 30;
             Life = 3;
             MaxLife = 3;
             Hunger = 200;
@@ -90,7 +90,7 @@ namespace Cervine
                 var newPosition = new Point(Position.X + direction.X, Position.Y + direction.Y);
                 newPosition = board.AdjustToBoardSize(newPosition);
 
-                if (Life < 0)
+                if (Life < 0 || Hunger < 0)
                 {
                     board.GameOver();
                 }
@@ -106,13 +106,6 @@ namespace Cervine
                     {
                         this.Hunger = Math.Min(Hunger + 20, 200);
                     }
-                    else if(powerup is ChargingPowerUp) //if detonator or charge
-                    {
-                        this.PowerUp = powerup;
-                        var tmpTexture = TextureImage;
-                        TextureImage = YellowTextureImage;
-                        YellowTextureImage = tmpTexture;
-                    }
                     else
                     {
                         this.PowerUp = powerup;
@@ -126,11 +119,8 @@ namespace Cervine
                     Position = newPosition;
                     board.ChangePosition(oldPosition, this);
                 }
-                if (HungerDelay >= MaxHungerDelay)
-                {
-                    HungerDelay = 0;
-                    Hunger--;
-                }
+                
+                
                 var key = Keyboard.GetState().GetPressedKeys();
                 if (key.Contains(Keys.Space))
                 {
@@ -149,9 +139,21 @@ namespace Cervine
                     }
                     else
                     {
-                        var bomb = new Bomb(BombTexture, Position, board);
-                        board.Plant(bomb);
+                        if (board.Bombs.Count(x => x.GetType() == typeof (Bomb)) < 2)
+                        {
+                            var bomb = new Bomb(BombTexture, Position, board);
+                            board.Plant(bomb);    
+                        }
                     }
+                }
+                if (HungerDelay >= MaxHungerDelay)
+                {
+                    HungerDelay = 0;
+                    Hunger--;
+                }
+                else
+                {
+                    HungerDelay++;
                 }
             }
             if (PowerUp != null)
@@ -162,9 +164,6 @@ namespace Cervine
                     if (PowerUp.Life <= 0)
                     {
                         PowerUp = null;
-                        var tmpTexture = TextureImage;
-                        TextureImage = YellowTextureImage;
-                        YellowTextureImage = tmpTexture;
                     }
                 }
                 else // Dynamite
@@ -182,15 +181,11 @@ namespace Cervine
 
         public override void DecreaseLife()
         {
-            if (LifeDelay == 0)
+            Life--;
+            if (Life <= 0)
             {
-                Life--;
-                if (Life <= 0)
-                {
-                    board.GameOver();
-                }
+                board.GameOver();
             }
-            LifeDelay = (LifeDelay + 1)%10;
         }
 
         public int LifeDelay { get; set; }

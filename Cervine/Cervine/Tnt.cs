@@ -42,7 +42,7 @@ namespace Cervine
 
         public override void Detonate()
         {
-            var positions = GetAffectedPositionsLarge();
+            var positions = GetAffectedPositions();
             foreach (var position in positions)
             {
                 foreach (var drawable in board.Drawables.Where(drawable => drawable.Position == position))
