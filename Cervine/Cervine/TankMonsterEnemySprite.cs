@@ -8,6 +8,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Cervine
 {
+    /// <summary>
+    /// Tank monster class
+    /// </summary>
     public class TankMonsterEnemySprite : EnemySprite
     {
         public TankMonsterEnemySprite(Texture2D tankEnemyTexture, Point position, GameBoard gameBoard)
@@ -15,7 +18,10 @@ namespace Cervine
         {
             Life = 3;
         }
-
+        /// <summary>
+        /// Calculates moves for monster that will follow user using Astar algorithm
+        /// </summary>
+        /// <param name="gameTime"></param>
         public override void Update(GameTime gameTime)
         {
             if (Delay == 0)

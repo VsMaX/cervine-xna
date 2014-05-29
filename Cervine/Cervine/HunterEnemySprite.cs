@@ -9,14 +9,27 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Cervine
 {
+    /// <summary>
+    /// Hunter enemy sprite
+    /// </summary>
     public class HunterEnemySprite : EnemySprite
     {
+        /// <summary>
+        /// Ctor for HunterEnemySprite
+        /// </summary>
+        /// <param name="textureImage">Texture image of hunter enemy</param>
+        /// <param name="position">Initial position on board</param>
+        /// <param name="board">GameBoard on which enemy is placed</param>
         public HunterEnemySprite(Texture2D textureImage, Point position, GameBoard board) : base(textureImage, position, board)
         {
             timeBeforeDirectionChange = 5000;
             this.Life = 1;
         }
-
+        /// <summary>
+        /// Calculates new moves of an enemy. 
+        /// If player is close enough the sprite will follow player using AStar algorithm.
+        /// </summary>
+        /// <param name="gameTime">Instance of GameTime class that is used to calculate time elapsed</param>
         public override void Update(GameTime gameTime)
         {
             if (Delay == 0)
@@ -62,9 +75,9 @@ namespace Cervine
             base.Update(gameTime);
             Delay = (Delay + 1) % 20;
         }
-
-        public int Delay2 { get; set; }
-
+        /// <summary>
+        /// Checks whether player is in range to follow him
+        /// </summary>
         public bool IsPlayerInRange
         {
             get { return AGwiazdka.ManhattanHeuristic(board.Fields[this.Position.X, this.Position.Y],

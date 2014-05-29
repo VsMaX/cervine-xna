@@ -8,19 +8,30 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Cervine
 {
+    /// <summary>
+    /// Scores menu responsible for getting user name and displaying top scores
+    /// </summary>
     public class ScoresMenu
     {
         private SpriteFont _font;
         private List<Score> _scoresList;
         private SpriteManager _spriteManager;
-
+        /// <summary>
+        /// Ctor for ScoresMenu
+        /// </summary>
+        /// <param name="spriteManager">SpriteManager used to draw objects on device screen</param>
+        /// <param name="scoresList">List of already taken scores</param>
+        /// <param name="font">Font used to draw text</param>
         public ScoresMenu(SpriteManager spriteManager, List<Score> scoresList, SpriteFont font)
         {
             this._font = font;
             this._scoresList = scoresList;
             _spriteManager = spriteManager;
         }
-
+        /// <summary>
+        /// Gets high scores from last game and sets mode to take user input
+        /// </summary>
+        /// <param name="score">Score made by player</param>
         public void GetHighScoresUserName(int score)
         {
             var scores = new Score();
@@ -30,9 +41,19 @@ namespace Cervine
             this._scoresList.Add(Score);
         }
 
+        /// <summary>
+        /// Score made by last player
+        /// </summary>
         public Score Score { get; set; }
+        /// <summary>
+        /// True if ScoresMenu is waiting for user name, false otherwise
+        /// </summary>
         public bool GetUserName { get; set; }
-
+        /// <summary>
+        /// Handles all user input and updates user name in Scores class.
+        /// </summary>
+        /// <param name="gameTime"></param>
+        /// <param name="clientBounds"></param>
         public void Update(GameTime gameTime, Rectangle clientBounds)
         {
             if (Delay == 0)
@@ -61,14 +82,24 @@ namespace Cervine
             }
             Delay = (Delay + 1) % 5;
         }
-
+        /// <summary>
+        /// Delay used to handle properly user input
+        /// </summary>
         public int Delay { get; set; }
-
+        /// <summary>
+        /// Checks whether pressed key is a normal character
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns>True if key is between A and Z, false otherwise</returns>
         public bool IsKeyAChar(Keys key)
         {
             return key >= Keys.A && key <= Keys.Z;
         }
-
+        /// <summary>
+        /// Draws all scores on device screen
+        /// </summary>
+        /// <param name="gameTime">Instance of GameTime class</param>
+        /// <param name="spriteBatch">Sprite batch used to draw objects on device screen</param>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             spriteBatch.DrawString(_font, "HIGH SCORES", new Vector2(200, 100), Color.White);

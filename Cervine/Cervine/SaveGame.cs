@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Cervine
 {
+    /// <summary>
+    /// SaveGame class responsible for loading and saving game into file
+    /// </summary>
     public class SaveGame
     {
         public void LoadScores()

@@ -8,6 +8,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Cervine
 {
+    /// <summary>
+    /// ShooterMonster class
+    /// </summary>
     public class ShooterMonsterEnemySprite : EnemySprite
     {
         public ShooterMonsterEnemySprite(Texture2D shooterEnemyTexture, Point position, GameBoard gameBoard)
@@ -15,7 +18,10 @@ namespace Cervine
         {
 
         }
-
+        /// <summary>
+        /// Calculates next move of a monster
+        /// </summary>
+        /// <param name="gameTime"></param>
         public override void Update(GameTime gameTime)
         {
             if (Delay == 0)
@@ -47,7 +53,10 @@ namespace Cervine
             Delay = (Delay + 1)%20;
             base.Update(gameTime);
         }
-
+        /// <summary>
+        /// Checks whether monster is on the same line as player
+        /// </summary>
+        /// <returns></returns>
         private bool IsOnAxisWithPlayer()
         {
             if (this.Position.X == board.Player.Position.X)

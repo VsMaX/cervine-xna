@@ -8,59 +8,61 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Cervine
 {
+    /// <summary>
+    /// Sprite class representing any object that can be drawn and acted upon on game
+    /// </summary>
     public abstract class Sprite
     {
-        // Stuff needed to draw the sprite
+        /// <summary>
+        /// Sprite's texture image used to draw on screen
+        /// </summary>
         public virtual Texture2D TextureImage { get; set; }
+        /// <summary>
+        /// Delay of input
+        /// </summary>
         public int Delay { get; set; }
-        protected Point frameSize;
-        protected Point currentFrame;
-        protected Point sheetSize;
-        public Guid Guid { get; set; }
-        // Collision data
-        protected int collisionOffset;
+        /// <summary>
+        /// Life of sprite
+        /// </summary>
         public int Life { get; set; }
-        // Framerate stuff
-        protected int timeSinceLastFrame;
-        protected int millisecondsPerFrame;
-        protected const int defaultMillisecondsPerFrame = 16;
 
-        // Movement data
+        /// <summary>
+        /// Sprite position on board
+        /// </summary>
         public Point Position { get; set; }
-        protected Rectangle modelSize;
+        /// <summary>
+        /// GameBoard of current game
+        /// </summary>
         protected GameBoard board;
-
+        /// <summary>
+        /// Returns current position of sprite on board
+        /// </summary>
+        /// <returns></returns>
         public Point GetPosition()
         {
             return Position;
         }
-
+        /// <summary>
+        /// Ctor of abstract class Sprite
+        /// </summary>
+        /// <param name="texture2D">Texture image used to render sprite on screen</param>
+        /// <param name="position">Initial position of sprite</param>
+        /// <param name="board">GameBoard of current game</param>
         public Sprite(Texture2D texture2D, Point position, GameBoard board)
         {
             this.board = board;
             this.TextureImage = texture2D;
             this.Position = position;
-            Guid = new Guid();
             this.Life = 1;
-            timeSinceLastFrame = 0;
         }
-
+        /// <summary>
+        /// Position of sprite from last update
+        /// </summary>
         protected Point lastPosition;
 
-        protected float halfSpriteHeight
-        {
-            get
-            {
-                return frameSize.Y / 2;
-            }
-        }
-
-        protected void RollbackMove()
-        {
-            this.Position = lastPosition;
-        }
-
-        // Abstract definition of direction property
+        /// <summary>
+        /// Abstract definition of direction property
+        /// </summary>
         public virtual Point Direction
         {
             get
@@ -68,22 +70,32 @@ namespace Cervine
                 return new Point();
             }
         }
-
+        /// <summary>
+        /// Calculates all moves and actions made for sprite
+        /// </summary>
+        /// <param name="gameTime"></param>
         public virtual void Update(GameTime gameTime)
         {
             
         }
-
+        /// <summary>
+        /// Resets sprite to initial value
+        /// </summary>
         public virtual void Reset()
         {
 
         }
-
+        /// <summary>
+        /// Decreases sprite's life by one
+        /// </summary>
         public virtual void DecreaseLife()
         {
             Life--;
         }
-
+        /// <summary>
+        /// Returns extended area of neighbouring positions
+        /// </summary>
+        /// <returns></returns>
         public List<Point> GetAffectedPositionsLarge()
         {
             var affectedPositions = new List<Point>();
@@ -170,7 +182,10 @@ namespace Cervine
 
             return affectedPositions;
         }
-
+        /// <summary>
+        /// Returns closest neighbouring area of positions
+        /// </summary>
+        /// <returns></returns>
         public List<Point> GetAffectedPositionsSmall()
         {
             var affectedPositions = new List<Point>();

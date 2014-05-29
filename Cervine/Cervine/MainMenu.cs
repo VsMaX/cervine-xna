@@ -11,6 +11,9 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Cervine
 {
+    /// <summary>
+    /// Main menu class responsible to drawing menus
+    /// </summary>
     public class MainMenu
     {
         private int selectedEntry;
@@ -24,7 +27,12 @@ namespace Cervine
         protected List<MenuSprite> menuSprites;
         protected SpriteManager _spriteManager;
         private SpriteFont _spriteFont;
-
+        /// <summary>
+        /// Ctor for MainMenu
+        /// </summary>
+        /// <param name="spriteManager">Instance of SpriteManager class used to draw objects on device</param>
+        /// <param name="menuSpriteList">List of menu positions in form of sprites</param>
+        /// <param name="spriteFont">Font used to draw text</param>
         public MainMenu(SpriteManager spriteManager, List<MenuSprite> menuSpriteList, SpriteFont spriteFont)
         {
             activeMenuIndex = 0;
@@ -34,7 +42,11 @@ namespace Cervine
             _spriteManager = spriteManager;
             _spriteFont = spriteFont;
         }
-
+        /// <summary>
+        /// Updates menu position and handles all user input within menu
+        /// </summary>
+        /// <param name="gameTime">Instance of GameTime class</param>
+        /// <param name="clientBounds">Drawing window game borders in pixels</param>
         public virtual void Update(GameTime gameTime, Rectangle clientBounds)
         {
             if (Delay == 0)
@@ -74,7 +86,10 @@ namespace Cervine
             }
             Delay = (Delay + 1)%5;
         }
-
+        /// <summary>
+        /// Loads game from previously saved state
+        /// </summary>
+        /// <returns></returns>
         private GameBoard LoadGame()
         {
             IFormatter formatter = new BinaryFormatter();
@@ -83,9 +98,15 @@ namespace Cervine
             stream.Close();
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// Delay that is used to slow down motion of user input
+        /// </summary>
         public int Delay { get; set; }
-
+        /// <summary>
+        /// Draws all sprites and menu options on device screen
+        /// </summary>
+        /// <param name="gameTime">Instance of GameTime class</param>
+        /// <param name="spriteBatch">SpriteBatch used to draw objects</param>
         public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             spriteBatch.DrawString(_spriteFont, "CERVINE", new Vector2(250, 100), Color.White);

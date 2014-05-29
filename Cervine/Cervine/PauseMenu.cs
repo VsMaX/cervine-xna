@@ -8,13 +8,26 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Cervine
 {
+    /// <summary>
+    /// Pause menu responsible for displaying and managing pause menu while in game
+    /// </summary>
     public class PauseMenu : MainMenu
     {
+        /// <summary>
+        /// Ctor for PauseMenu
+        /// </summary>
+        /// <param name="spriteManager">SpriteManager used to draw objects from menu</param>
+        /// <param name="menuSpriteList">List of menu options that are drawn by PauseMenu</param>
+        /// <param name="spriteFont">Font used to draw text</param>
         public PauseMenu(SpriteManager spriteManager, List<MenuSprite> menuSpriteList, SpriteFont spriteFont)
             : base(spriteManager, menuSpriteList, spriteFont)
         {
         }
-
+        /// <summary>
+        /// Handles user input while in menu
+        /// </summary>
+        /// <param name="gameTime">Instance of GameTime class</param>
+        /// <param name="clientBounds">Game window width and height</param>
         public override void Update(GameTime gameTime, Rectangle clientBounds)
         {
             if (Delay == 0)
@@ -51,7 +64,6 @@ namespace Cervine
                 }
             }
             Delay = (Delay + 1)%5;
-
         }
     }
 }

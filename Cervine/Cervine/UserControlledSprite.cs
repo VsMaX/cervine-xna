@@ -6,16 +6,26 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Cervine
 {
+    /// <summary>
+    /// Player controlled by user
+    /// </summary>
     public class UserControlledSprite : Sprite
     {
-        // Movement stuff
-
-        // Get Direction of sprite based on player input and speed
         private readonly Texture2D _destroyableWallTexture;
         private Vector2 lastDirection;
         private Vector2 lastPosition;
         private MouseState prevMouseState;
-
+        /// <summary>
+        /// Ctor for UserControlledSprite
+        /// </summary>
+        /// <param name="texture2D">Texture of user to be displayed on screen</param>
+        /// <param name="position">Initial position of UserControlledSprite</param>
+        /// <param name="board">GameBoard of current game on which UserControlledSprite is</param>
+        /// <param name="lifeTextureImage">Texture used for displaying life</param>
+        /// <param name="hungerTextureImage">Texture used for displaying hunger</param>
+        /// <param name="yellowUserTexture2D">Texture used for diplaying charging effect</param>
+        /// <param name="bombTexture">Texture used for displaying bomb on map</param>
+        /// <param name="destroyableWallTexture">Texture used for displaying destroyable wall on map</param>
         public UserControlledSprite(Texture2D texture2D, Point position, GameBoard board, Texture2D lifeTextureImage,
             Texture2D hungerTextureImage,
             Texture2D yellowUserTexture2D, Texture2D bombTexture, Texture2D destroyableWallTexture)
@@ -35,12 +45,25 @@ namespace Cervine
         public Texture2D HungerTextureImage { get; set; }
         public Texture2D YellowTextureImage { get; set; }
         public Texture2D BombTexture { get; set; }
-
+        /// <summary>
+        /// User life
+        /// </summary>
         public int Life { get; set; }
+        /// <summary>
+        /// User hunger delay before hunger decreases
+        /// </summary>
         public int HungerDelay { get; set; }
+        /// <summary>
+        /// Maximum hunger that user can have
+        /// </summary>
         public int MaxHungerDelay { get; set; }
+        /// <summary>
+        /// Current hunger value
+        /// </summary>
         public int Hunger { get; set; }
-
+        /// <summary>
+        /// Gets user input for direction
+        /// </summary>
         public override Point Direction
         {
             get
@@ -70,24 +93,39 @@ namespace Cervine
         }
 
         public Texture2D LifeTextureImage { get; set; }
-
+        /// <summary>
+        /// Maximum life that user can have
+        /// </summary>
         public decimal MaxLife { get; set; }
-
+        /// <summary>
+        /// Current powerup holding by user
+        /// </summary>
         public PowerUp PowerUp { get; set; }
-
+        /// <summary>
+        /// Delay before next life can be subtracted from user
+        /// </summary>
         public int LifeDelay { get; set; }
-
+        /// <summary>
+        /// Returns true if user has any powerup in slot, false otherwise
+        /// </summary>
         public bool HasPowerUp
         {
             get { return PowerUp != null; }
         }
-
+        /// <summary>
+        /// Resets player stats
+        /// </summary>
         public override void Reset()
         {
             Position = new Point(0, 0);
             base.Reset();
         }
-
+        /// <summary>
+        /// Takes user input and moves player accordingly.
+        /// Picks up all PowerUps and handles bomb planting.
+        /// Decreases hunger for player.
+        /// </summary>
+        /// <param name="gameTime"></param>
         public override void Update(GameTime gameTime)
         {
             if (Delay == 0)
@@ -245,7 +283,9 @@ namespace Cervine
             }
             Delay = (Delay + 1)%5;
         }
-
+        /// <summary>
+        /// Decreases player's life by one
+        /// </summary>
         public override void DecreaseLife()
         {
             Life--;

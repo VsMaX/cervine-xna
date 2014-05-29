@@ -7,6 +7,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Cervine
 {
+    /// <summary>
+    /// Medpack PowerUp
+    /// </summary>
     public class MedpackPowerUp : PowerUp
     {
         public MedpackPowerUp(Texture2D texture2D, Point position, GameBoard board)

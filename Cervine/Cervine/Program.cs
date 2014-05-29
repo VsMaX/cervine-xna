@@ -3,6 +3,9 @@ using System;
 namespace Cervine
 {
 #if WINDOWS || XBOX
+    /// <summary>
+    /// Entry point of whole game
+    /// </summary>
     static class Program
     {
         /// <summary>

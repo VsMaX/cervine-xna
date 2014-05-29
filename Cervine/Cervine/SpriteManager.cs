@@ -152,7 +152,9 @@ namespace Cervine
                 }
             }
         }
-
+        /// <summary>
+        /// Loads initial game content
+        /// </summary>
         protected override void LoadContent()
         {
             backgroundImage = Game.Content.Load<Texture2D>(@"background");
@@ -243,7 +245,10 @@ namespace Cervine
 
             gameBoard.Update(gameTime);
         }
-
+        /// <summary>
+        /// Draws all objects on screen
+        /// </summary>
+        /// <param name="gameTime"></param>
         public override void Draw(GameTime gameTime)
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
@@ -270,7 +275,10 @@ namespace Cervine
 
             spriteBatch.End();
         }
-
+        /// <summary>
+        /// Draws objects related to gameplay
+        /// </summary>
+        /// <param name="gameTime"></param>
         public void DrawGamePlaying(GameTime gameTime)
         {
             // Draw the player
@@ -278,7 +286,10 @@ namespace Cervine
             // game time
             gameBoard.Draw(gameTime, spriteBatch);
         }
-
+        /// <summary>
+        /// Finishes current game and displays high scores
+        /// </summary>
+        /// <param name="timeScore"></param>
         public void GameOver(int timeScore)
         {
             var score = new Score();
@@ -286,22 +297,9 @@ namespace Cervine
             score.Time = timeScore;
             gameScoresMenu.GetHighScoresUserName(timeScore);
         }
-
+        /// <summary>
+        /// GameState enum of current game
+        /// </summary>
         public GameState GameState { get; set; }
-
-        public void SaveGame()
-        {
-            try
-            {
-                Stream TestFileStream = File.Create("savegame.bin");
-                BinaryFormatter serializer = new BinaryFormatter();
-                serializer.Serialize(TestFileStream, gameBoard);
-                TestFileStream.Close();
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
     }
 }
