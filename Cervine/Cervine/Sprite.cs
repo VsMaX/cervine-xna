@@ -21,7 +21,7 @@ namespace Cervine
         protected int collisionOffset;
         public int Life { get; set; }
         // Framerate stuff
-        protected int timeSinceLastFrame = 0;
+        protected int timeSinceLastFrame;
         protected int millisecondsPerFrame;
         protected const int defaultMillisecondsPerFrame = 16;
 
@@ -42,6 +42,7 @@ namespace Cervine
             this.Position = position;
             Guid = new Guid();
             this.Life = 1;
+            timeSinceLastFrame = 0;
         }
 
         protected Point lastPosition;
@@ -59,7 +60,7 @@ namespace Cervine
             this.Position = lastPosition;
         }
 
-        // Abstract definition of Direction property
+        // Abstract definition of direction property
         public virtual Point Direction
         {
             get
@@ -68,7 +69,10 @@ namespace Cervine
             }
         }
 
-        public abstract void Update(GameTime gameTime);
+        public virtual void Update(GameTime gameTime)
+        {
+            
+        }
 
         public virtual void Reset()
         {

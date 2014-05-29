@@ -1,5 +1,7 @@
 Content\background.xnb
 Content\bomb.xnb
+Content\Enemies\hunter.xnb
+Content\Enemies\normal.xnb
 Content\heart.xnb
 Content\hungerbar.xnb
 Content\player_transparent.xnb
@@ -24,9 +26,6 @@ Content\UI\ZAPISZ-GRE.xnb
 Content\wall.xnb
 Content\wall_destroyable.xnb
 Content\bombfire.xnb
-Content\arial.xnb
-Content\Enemies\hunter.xnb
-Content\Enemies\normal.xnb
 Content\Enemies\shooter.xnb
 Content\Enemies\tank.xnb
 Content\food.xnb
@@ -39,3 +38,4 @@ Content\debris1.xnb
 Content\debris2.xnb
 Content\debris3.xnb
 Content\debris4.xnb
+Content\arial.xnb

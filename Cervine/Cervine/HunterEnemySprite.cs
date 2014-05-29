@@ -17,11 +17,6 @@ namespace Cervine
             this.Life = 1;
         }
 
-        public override Point Direction
-        {
-            get { throw new NotImplementedException(); }
-        }
-
         public override void Update(GameTime gameTime)
         {
             if (Delay == 0)

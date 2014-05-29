@@ -25,18 +25,20 @@ namespace Cervine
         private SpriteBatch spriteBatch;
         private SpriteManager spriteManager;
         private MainMenu mainMenu;
+        /// <summary>
+        /// GameState enum of game
+        /// </summary>
         public GameState GameState { get; set; }
-        public HighScores HighScores { get; set; }
-
+        /// <summary>
+        /// Ctor for 
+        /// </summary>
         public CervineGame()
             : base()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             GameState = GameState.MainMenu;
-            this.HighScores = new HighScores();
         }
-
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
@@ -55,7 +57,6 @@ namespace Cervine
             graphics.ApplyChanges();
             base.Initialize();
         }
-
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
@@ -65,7 +66,6 @@ namespace Cervine
             // Create a new SpriteBatch, which can be used to draw textures.
             // TODO: use this.Content to load your game content here
         }
-
         /// <summary>
         /// UnloadContent will be called once per game and is the place to unload
         /// all content.
@@ -74,7 +74,6 @@ namespace Cervine
         {
             // TODO: Unload any non ContentManager content here
         }
-
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -84,7 +83,6 @@ namespace Cervine
         {
             base.Update(gameTime);
         }
-
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
@@ -94,14 +92,6 @@ namespace Cervine
             GraphicsDevice.Clear(new Color(151, 151, 151, 255));
 
             base.Draw(gameTime);
-        }
-    }
-
-    public class HighScores
-    {
-        public void Add(HighScore highScore)
-        {
-            throw new NotImplementedException();
         }
     }
 }

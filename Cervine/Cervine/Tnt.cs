@@ -17,11 +17,6 @@ namespace Cervine
             TimeTick = 41;
         }
 
-        public override Point Direction
-        {
-            get { throw new NotImplementedException(); }
-        }
-
         public override void Update(GameTime gameTime)
         {
             throw new NotImplementedException();

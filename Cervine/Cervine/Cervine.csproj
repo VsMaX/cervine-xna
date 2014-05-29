@@ -79,19 +79,23 @@
     <Compile Include="AStar\PriorityQueueNode.cs" />
     <Compile Include="Bomb.cs" />
     <Compile Include="CervineGame.cs" />
+    <Compile Include="ChargingPowerUp.cs" />
     <Compile Include="DebrisPowerUp.cs" />
     <Compile Include="DestroyableWallSprite.cs" />
     <Compile Include="EnemySprite.cs" />
     <Compile Include="Field.cs" />
+    <Compile Include="FoodPowerUp.cs" />
     <Compile Include="GameBoard.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="HighScore.cs" />
     <Compile Include="HunterEnemySprite.cs" />
     <Compile Include="MainMenu.cs" />
+    <Compile Include="MedpackPowerUp.cs" />
     <Compile Include="MenuSprite.cs" />
     <Compile Include="NormalEnemySprite.cs" />
     <Compile Include="PauseMenu.cs" />
+    <Compile Include="PowerUp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="SaveGame.cs" />
@@ -102,6 +106,7 @@
     <Compile Include="SpriteManager.cs" />
     <Compile Include="TankMonsterEnemySprite.cs" />
     <Compile Include="Tnt.cs" />
+    <Compile Include="TntDetonatorPowerUp.cs" />
     <Compile Include="UserControlledSprite.cs" />
     <Compile Include="WallSprite.cs" />
   </ItemGroup>

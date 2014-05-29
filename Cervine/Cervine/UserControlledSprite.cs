@@ -1,32 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Configuration;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using Cervine.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using GamePad = Microsoft.Xna.Framework.Input.GamePad;
-using GamePadState = Microsoft.Xna.Framework.Input.GamePadState;
-using Keyboard = Microsoft.Xna.Framework.Input.Keyboard;
-using KeyboardState = Microsoft.Xna.Framework.Input.KeyboardState;
-using MouseState = Microsoft.Xna.Framework.Input.MouseState;
-using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace Cervine
 {
-    public class UserControlledSprite: Sprite
+    public class UserControlledSprite : Sprite
     {
         // Movement stuff
-        MouseState prevMouseState;
 
         // Get Direction of sprite based on player input and speed
+        private readonly Texture2D _destroyableWallTexture;
         private Vector2 lastDirection;
         private Vector2 lastPosition;
-        private Texture2D _destroyableWallTexture;
+        private MouseState prevMouseState;
+
+        public UserControlledSprite(Texture2D texture2D, Point position, GameBoard board, Texture2D lifeTextureImage,
+            Texture2D hungerTextureImage,
+            Texture2D yellowUserTexture2D, Texture2D bombTexture, Texture2D destroyableWallTexture)
+            : base(texture2D, position, board)
+        {
+            MaxHungerDelay = 30;
+            Life = 3;
+            MaxLife = 3;
+            Hunger = 150;
+            LifeTextureImage = lifeTextureImage;
+            HungerTextureImage = hungerTextureImage;
+            YellowTextureImage = yellowUserTexture2D;
+            BombTexture = bombTexture;
+            _destroyableWallTexture = destroyableWallTexture;
+        }
+
         public Texture2D HungerTextureImage { get; set; }
         public Texture2D YellowTextureImage { get; set; }
         public Texture2D BombTexture { get; set; }
@@ -36,26 +41,12 @@ namespace Cervine
         public int MaxHungerDelay { get; set; }
         public int Hunger { get; set; }
 
-        public UserControlledSprite(Texture2D texture2D, Point position, GameBoard board, Texture2D lifeTextureImage, Texture2D hungerTextureImage,
-            Texture2D yellowUserTexture2D, Texture2D bombTexture, Texture2D destroyableWallTexture) : base(texture2D, position, board)
-        {
-            MaxHungerDelay = 30;
-            Life = 3;
-            MaxLife = 3;
-            Hunger = 150;
-            this.LifeTextureImage = lifeTextureImage;
-            this.HungerTextureImage = hungerTextureImage;
-            this.YellowTextureImage = yellowUserTexture2D;
-            this.BombTexture = bombTexture;
-            _destroyableWallTexture = destroyableWallTexture;
-        }
-
         public override Point Direction
         {
             get
             {
                 Point inputDirection = Point.Zero;
-                var keyboardState = Keyboard.GetState();
+                KeyboardState keyboardState = Keyboard.GetState();
                 // If player pressed arrow keys, move the sprite
                 if (keyboardState.IsKeyDown(Keys.Left))
                 {
@@ -78,13 +69,24 @@ namespace Cervine
             }
         }
 
-        public override void Reset()
+        public Texture2D LifeTextureImage { get; set; }
+
+        public decimal MaxLife { get; set; }
+
+        public PowerUp PowerUp { get; set; }
+
+        public int LifeDelay { get; set; }
+
+        public bool HasPowerUp
         {
-            this.Position = new Point(0,0);
-            base.Reset();
+            get { return PowerUp != null; }
         }
 
-        public Texture2D LifeTextureImage { get; set; }
+        public override void Reset()
+        {
+            Position = new Point(0, 0);
+            base.Reset();
+        }
 
         public override void Update(GameTime gameTime)
         {
@@ -102,16 +104,16 @@ namespace Cervine
                     var powerup = board.Fields[newPosition.X, newPosition.Y].Sprite as PowerUp;
                     if (powerup is MedpackPowerUp)
                     {
-                        if(Life < MaxLife)
-                            this.Life++;
+                        if (Life < MaxLife)
+                            Life++;
                     }
                     else if (powerup is FoodPowerUp)
                     {
-                        this.Hunger = Math.Min(Hunger + 20, 150);
+                        Hunger = Math.Min(Hunger + 20, 150);
                     }
                     else if (powerup is DebrisPowerUp)
                     {
-                        if (this.PowerUp is DebrisPowerUp)
+                        if (PowerUp is DebrisPowerUp)
                         {
                             var playerDebris = PowerUp as DebrisPowerUp;
                             playerDebris.IncreaseDebris();
@@ -120,24 +122,24 @@ namespace Cervine
                         {
                             var debrisPowerUp = powerup as DebrisPowerUp;
                             debrisPowerUp.DebrisCount = 1;
-                            this.PowerUp = debrisPowerUp;
+                            PowerUp = debrisPowerUp;
                         }
                     }
                     else
                     {
-                        this.PowerUp = powerup;
+                        PowerUp = powerup;
                     }
-                    
-                    board.RemoveObject(powerup);   
+
+                    board.RemoveObject(powerup);
                 }
 
-                var key = Keyboard.GetState().GetPressedKeys();
+                Keys[] key = Keyboard.GetState().GetPressedKeys();
                 if (key.Contains(Keys.X) && PowerUp is DebrisPowerUp) // plant wall
                 {
                     var debris = PowerUp as DebrisPowerUp;
                     if (debris.DebrisCount > 1)
                     {
-                        Point wallPos = new Point();
+                        var wallPos = new Point();
                         if (key.Contains(Keys.Left))
                         {
                             wallPos = new Point(Position.X - 1, Position.Y);
@@ -190,11 +192,11 @@ namespace Cervine
                 }
                 if (board.IsPositionValid(newPosition))
                 {
-                    var oldPosition = Position;
+                    Point oldPosition = Position;
                     Position = newPosition;
                     board.ChangePosition(oldPosition, this);
                 }
-                
+
                 if (key.Contains(Keys.Space))
                 {
                     if (PowerUp is TntDetonatorPowerUp)
@@ -203,7 +205,7 @@ namespace Cervine
                         if (tnt.IsPlanted)
                         {
                             tnt.Detonate();
-                            this.PowerUp = null;
+                            PowerUp = null;
                         }
                         else
                         {
@@ -215,11 +217,11 @@ namespace Cervine
                         if (board.Bombs.Count(x => x.GetType() == typeof (Bomb)) < 2)
                         {
                             var bomb = new Bomb(BombTexture, Position, board);
-                            board.Plant(bomb);    
+                            board.Plant(bomb);
                         }
                     }
                 }
-                
+
                 if (HungerDelay >= MaxHungerDelay)
                 {
                     HungerDelay = 0;
@@ -234,34 +236,19 @@ namespace Cervine
             {
                 if (PowerUp is ChargingPowerUp)
                 {
-                    PowerUp.Life -= (int)gameTime.ElapsedGameTime.TotalMilliseconds;
+                    PowerUp.Life -= (int) gameTime.ElapsedGameTime.TotalMilliseconds;
                     if (PowerUp.Life <= 0)
                     {
                         PowerUp = null;
                     }
                 }
-                else // Dynamite
-                {
-                    
-                }
             }
             Delay = (Delay + 1)%5;
         }
 
-        public decimal MaxLife { get; set; }
-
-        public PowerUp PowerUp { get; set; }
-
         public override void DecreaseLife()
         {
             Life--;
-        }
-
-        public int LifeDelay { get; set; }
-
-        public bool HasPowerUp
-        {
-            get { return PowerUp != null; }
         }
     }
 }

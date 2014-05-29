@@ -6,6 +6,9 @@ using Priority_Queue;
 
 namespace Cervine
 {
+    /// <summary>
+    /// Field representing one cell on game board, inherits from PriorityQueueNode in order to implement efficiently AStar
+    /// </summary>
     public class Field : PriorityQueueNode
     {
         public Field(int x, int y)

@@ -25,35 +25,33 @@ namespace Cervine
             TimeTick = 240;
         }
         /// <summary>
-        /// Direction
+        /// Time interval before bomb explodes
         /// </summary>
-        public override Point Direction
-        {
-            get { throw new NotImplementedException(); }
-        }
-
         public int TimeTick { get; set; }
-
+        /// <summary>
+        /// Checks the condition whether bomb is ready to be detonated
+        /// </summary>
         public virtual bool IsReadyToDetonate
         {
             get { return TimeTick <= 0; }
         }
-
-        public override void Update(GameTime gameTime)
-        {
-            throw new NotImplementedException();
-        }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public override void DecreaseLife()
         {
             this.TimeTick = 4;
         }
-
+        /// <summary>
+        /// Imitates bomb ticking by decreasing time to detonation
+        /// </summary>
         public virtual void DecreaseTime()
         {
             TimeTick--;
         }
-
+        /// <summary>
+        /// Detonates bomb and hurts all sprites in detonation area
+        /// </summary>
         public virtual void Detonate()
         { 
              var positions = GetAffectedPositions();
@@ -80,7 +78,10 @@ namespace Cervine
             board.Fields[Position.X, Position.Y].Bomb = null;
             board.Bombs.Remove(this);
         }
-
+        /// <summary>
+        /// Returns all positions that are affected by bomb detonation
+        /// </summary>
+        /// <returns></returns>
         public virtual List<Point> GetAffectedPositions()
         {
             if (board.Player.PowerUp is ChargingPowerUp)

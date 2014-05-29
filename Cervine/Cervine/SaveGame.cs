@@ -9,7 +9,7 @@ namespace Cervine
 {
     public class SaveGame
     {
-        public HighScores LoadScores()
+        public void LoadScores()
         {
             var path = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             using (FileStream fs = File.Open(path, FileMode.Open))
