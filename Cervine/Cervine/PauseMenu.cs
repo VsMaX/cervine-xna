@@ -53,7 +53,7 @@ namespace Cervine
                             _spriteManager.GameState = GameState.Playing;
                             break;
                         case 1:
-                            _spriteManager.SaveGame();
+                            //_spriteManager.SaveGame();
                             break;
                         case 5:
                             _spriteManager.GameState = GameState.MainMenu;
