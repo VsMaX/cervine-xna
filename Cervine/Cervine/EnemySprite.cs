@@ -39,27 +39,15 @@ namespace Cervine.Content
 
         protected void ChangeDirection()
         {
+            Random r = new Random();
+            _direction.X = r.Next(1000)%3 - 1;
             if (_direction.X == 0)
             {
-                if (_direction.Y == 1)
-                {
-                    _direction = new Point(1, 0);
-                }
-                else //_direction.Y == -1
-                {
-                    _direction = new Point(-1, 0);
-                }
+                _direction.Y = r.Next(1000)%3 - 1;
             }
             else
             {
-                if (_direction.X == 1)
-                {
-                    _direction = new Point(0, 1);
-                }
-                else //_direction.X == -1
-                {
-                    _direction = new Point(0, -1);
-                }
+                _direction.Y = 0;
             }
         }
     }

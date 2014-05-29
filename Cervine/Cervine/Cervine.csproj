@@ -91,9 +91,12 @@
     <Compile Include="MainMenu.cs" />
     <Compile Include="MenuSprite.cs" />
     <Compile Include="NormalEnemySprite.cs" />
+    <Compile Include="PauseMenu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="SaveGame.cs" />
+    <Compile Include="Score.cs" />
+    <Compile Include="ScoresMenu.cs" />
     <Compile Include="ShooterMonsterEnemySprite.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="SpriteManager.cs" />

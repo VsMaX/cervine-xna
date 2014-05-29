@@ -255,10 +255,6 @@ namespace Cervine
         public override void DecreaseLife()
         {
             Life--;
-            if (Life <= 0)
-            {
-                board.GameOver();
-            }
         }
 
         public int LifeDelay { get; set; }

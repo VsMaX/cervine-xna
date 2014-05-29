@@ -3,34 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace Cervine
 {
-    public class MainMenu
+    public class PauseMenu : MainMenu
     {
-        private int selectedEntry;
-
-        protected static readonly Keys MenuDownKey = Keys.Down;
-        protected static readonly Keys MenuUpKey = Keys.Up;
-        protected static readonly Keys MenuEnterKey = Keys.Enter;
-
-        protected int activeMenuIndex;
-        protected int maxMenuIndex;
-        protected List<MenuSprite> menuSprites;
-        protected SpriteManager _spriteManager;
-
-        public MainMenu(SpriteManager spriteManager, List<MenuSprite> menuSpriteList)
+        public PauseMenu(SpriteManager spriteManager, List<MenuSprite> menuSpriteList)
+            : base(spriteManager, menuSpriteList)
         {
-            activeMenuIndex = 0;
-            menuSprites = menuSpriteList;
-            menuSprites[activeMenuIndex].IsActiveMenuItem = true;
-            maxMenuIndex = menuSprites.Count;
-            _spriteManager = spriteManager;
         }
 
-        public virtual void Update(GameTime gameTime, Rectangle clientBounds)
+        public override void Update(GameTime gameTime, Rectangle clientBounds)
         {
             if (Delay == 0)
             {
@@ -52,11 +36,10 @@ namespace Cervine
                     switch (activeMenuIndex)
                     {
                         case 0:
-                            _spriteManager.NewGame();
                             _spriteManager.GameState = GameState.Playing;
                             break;
-                        case 2:
-                            _spriteManager.GameState = GameState.GameOver;
+                        case 5:
+                            _spriteManager.GameState = GameState.MainMenu;
                             break;
                         default:
                             break;
@@ -64,16 +47,7 @@ namespace Cervine
                 }
             }
             Delay = (Delay + 1)%5;
-        }
 
-        public int Delay { get; set; }
-
-        public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-        {
-            foreach (var menuSprite in menuSprites)
-            {
-                menuSprite.Draw(gameTime, spriteBatch);
-            }
         }
     }
 }

@@ -14,25 +14,24 @@ namespace Cervine
         public NormalEnemySprite(Texture2D textureImage, Point position, GameBoard gameBoard)
             : base(textureImage, position, gameBoard)
         {
-            timeBeforeDirectionChange = 3000;
+            timeBeforeDirectionChange = 2000;
             this.Life = 2;
         }
 
         private double timeElapsed;
         private double timeBeforeDirectionChange;
-        private Point _direction;
 
         public override void Update(GameTime gameTime)
         {
-            timeElapsed += gameTime.ElapsedGameTime.TotalMilliseconds;
-            var newPosition = Position;
-            if (timeElapsed >= timeBeforeDirectionChange)
-            {
-                timeElapsed = 0;
-                ChangeDirection();
-            }
             if (Delay == 0)
             {
+                timeElapsed += gameTime.ElapsedGameTime.TotalMilliseconds;
+                var newPosition = Position;
+                if (timeElapsed >= timeBeforeDirectionChange)
+                {
+                    timeElapsed = 0;
+                    ChangeDirection();
+                }
                 newPosition = new Point(newPosition.X + _direction.X, newPosition.Y + _direction.Y);
                 var oldPosition = Position;
                 newPosition = board.AdjustToBoardSize(newPosition);
@@ -46,9 +45,8 @@ namespace Cervine
                     ChangeDirection();
                 }
             }
-            Delay = (Delay + 1)%5;
-            
             base.Update(gameTime);
+            Delay = (Delay + 1)%20;
         }
     }
 }

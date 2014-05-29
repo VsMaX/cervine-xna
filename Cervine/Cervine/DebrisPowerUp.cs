@@ -33,19 +33,14 @@ namespace Cervine
                 {
                     case 0:
                         return _texture4;
-                        break;
                     case 1:
                         return _texture1;
-                        break;
                     case 2:
                         return _texture2;
-                        break;
                     case 3:
                         return _texture3;
-                        break;
                     case 4:
                         return _texture4;
-                        break;
                     default:
                         return _texture4;
 

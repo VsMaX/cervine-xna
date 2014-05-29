@@ -27,6 +27,7 @@ namespace Cervine
         public double TimeSinceLastRespawn { get; set; }
         public double TimeToRespawn { get; set; }
         public Tnt Tnt { get; set; }
+        private double _gameTime;
 
         public UserControlledSprite Player
         {
@@ -39,6 +40,7 @@ namespace Cervine
             Texture2D chargingTexture, Texture2D tntTexture, Texture2D bombTexture2D, Texture2D debrisTexture1, Texture2D debrisTexture2, Texture2D debrisTexture3,
             Texture2D debrisTexture4, Texture2D destroyableWallTexture)
         {
+            _gameTime = 0;
             _bombFire = bombFire;
             _normalEnemyTexture = normalEnemyTexture;
             _hunterEnemyTexture = hunterEnemyTexture;
@@ -189,6 +191,8 @@ namespace Cervine
             {
                 spriteBatch.Draw(Player.PowerUp.TextureImage, new Vector2(340, 5), Color.White);
             }
+
+            spriteBatch.DrawString(font, ((int)(_gameTime/1000)).ToString("0000"), new Vector2(130, 10), Color.White);
         }
 
         public Point AdjustToBoardSize(Point position)
@@ -264,6 +268,8 @@ namespace Cervine
             {
                 TimeSinceLastDestroyableWall += gameTime.ElapsedGameTime.TotalMilliseconds;
             }
+
+            _gameTime += gameTime.ElapsedGameTime.TotalMilliseconds;
         }
 
         private Sprite GenerateDestroyableWall()
@@ -351,16 +357,9 @@ namespace Cervine
             return Fields[position.X, position.Y].Sprite;
         }
         
-        public void OnGameOver()
-        {
-            if (GameOverEvent != null)
-            {
-                GameOverEvent(this, new EventArgs());
-            }
-        }
-
         public void GameOver()
         {
+            _spriteManager.GameOver((int)(_gameTime/1000));
         }
 
         public void ResetGame()

@@ -46,7 +46,7 @@ namespace Cervine
         protected override void Initialize()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            spriteManager = new SpriteManager(this, new Point(20, 15), spriteBatch);
+            spriteManager = new SpriteManager(this, new Point(20, 15), spriteBatch, Content);
             Components.Add(spriteManager);
             graphics.IsFullScreen = false;
             graphics.PreferredBackBufferHeight = 680;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.ConstrainedExecution;
 using Cervine.Content;
 using Microsoft.Xna.Framework;
@@ -30,17 +31,19 @@ namespace Cervine
 
         public Point boardSize;
         public MainMenu mainMenu;
-        public MainMenu pauseMenu;
+        public PauseMenu pauseMenu;
         public ScoresMenu gameScoresMenu;
         public TimeSpan gameTimeElapsed;
         public SpriteFont gameTimeFont;
         public CervineGame game;
         public GameBoard gameBoard;
+        private ContentManager _contentManager;
 
-        public SpriteManager(CervineGame game, Point boardSize, SpriteBatch spriteBatch)
+        public SpriteManager(CervineGame game, Point boardSize, SpriteBatch spriteBatch, ContentManager contentManager)
             : base(game)
         {
             Game.Content.RootDirectory = "Content";
+            _contentManager = contentManager;
             this.game = game;
             this.boardSize = boardSize;
             this.spriteBatch = spriteBatch;
@@ -62,9 +65,8 @@ namespace Cervine
             gameBoard.ResetGame();
         }
 
-        protected override void LoadContent()
+        public void NewGame()
         {
-            gameTimeFont = Game.Content.Load<SpriteFont>(@"arial");
             var normalEnemyTexture = Game.Content.Load<Texture2D>(@"Enemies/normal");
             var hunterEnemyTexture = Game.Content.Load<Texture2D>(@"Enemies/hunter");
             var shooterEnemyTexture = Game.Content.Load<Texture2D>(@"Enemies/shooter");
@@ -98,8 +100,7 @@ namespace Cervine
 
             gameBoard.AddObject(player);
 
-            backgroundImage = Game.Content.Load<Texture2D>(@"background");
-            
+
             var r = new Random();
             var wallSprite = Game.Content.Load<Texture2D>(@"wall");
             //generate random walls
@@ -108,7 +109,7 @@ namespace Cervine
                 int X = r.Next(boardSize.X);
                 int Y = r.Next(boardSize.Y);
                 var position = new Point(X, Y);
-                if (gameBoard.IsPositionValid(position) && position.X >= 3 && position.Y >= 3)
+                if (gameBoard.IsPositionValid(position) && Math.Sqrt(position.X * position.X + position.Y * position.Y) >= 3)
                 {
                     gameBoard.AddObject(new WallSprite(wallSprite, new Point(X, Y),
                         gameBoard));
@@ -121,77 +122,78 @@ namespace Cervine
                 int X = r.Next(boardSize.X);
                 int Y = r.Next(boardSize.Y);
                 var position = new Point(X, Y);
-                if (gameBoard.IsPositionValid(position) && position.X >= 3 && position.Y >= 3)
+                if (gameBoard.IsPositionValid(position) && Math.Sqrt(position.X * position.X + position.Y * position.Y) >= 3)
                 {
                     var destrWallSprite = new DestroyableWallSprite(wallDestroyableTexture,
                     new Point(X, Y), gameBoard);
                     gameBoard.AddObject(destrWallSprite);
                 }
             }
+        }
+
+        protected override void LoadContent()
+        {
+            backgroundImage = Game.Content.Load<Texture2D>(@"background");
+            gameTimeFont = Game.Content.Load<SpriteFont>(@"arial");
 
             var menuSpriteList = new List<MenuSprite>
             {
                 new MenuSprite("NOWA-GRA", Game.Content.Load<Texture2D>(@"UI/NOWA-GRA"),
-                    Game.Content.Load<Texture2D>(@"UI/NOWA-GRA-HOVER"), new Vector2(200, 50)),
+                    Game.Content.Load<Texture2D>(@"UI/NOWA-GRA-HOVER"), new Vector2(250, 150)),
                 new MenuSprite("ZALADUJ-GRE", Game.Content.Load<Texture2D>(@"UI/ZALADUJ-GRE"),
-                    Game.Content.Load<Texture2D>(@"UI/ZALADUJ-GRE-HOVER"), new Vector2(200, 100)),
+                    Game.Content.Load<Texture2D>(@"UI/ZALADUJ-GRE-HOVER"), new Vector2(250, 200)),
                 new MenuSprite("NAJLEPSZE-WYNIKI", Game.Content.Load<Texture2D>(@"UI/NAJLEPSZE-WYNIKI"),
-                    Game.Content.Load<Texture2D>(@"UI/NAJLEPSZE-WYNIKI-HOVER"), new Vector2(200, 150)),
+                    Game.Content.Load<Texture2D>(@"UI/NAJLEPSZE-WYNIKI-HOVER"), new Vector2(250, 250)),
                 new MenuSprite("STEROWANIE", Game.Content.Load<Texture2D>(@"UI/STEROWANIE"),
-                    Game.Content.Load<Texture2D>(@"UI/STEROWANIE-HOVER"), new Vector2(200, 200)),
+                    Game.Content.Load<Texture2D>(@"UI/STEROWANIE-HOVER"), new Vector2(250, 300)),
                 new MenuSprite("DZWIEK", Game.Content.Load<Texture2D>(@"UI/DZWIEK"),
-                    Game.Content.Load<Texture2D>(@"UI/DZWIEK-HOVER"), new Vector2(200, 250)),
+                    Game.Content.Load<Texture2D>(@"UI/DZWIEK-HOVER"), new Vector2(250, 350)),
                 new MenuSprite("POMOC", Game.Content.Load<Texture2D>(@"UI/POMOC"),
-                    Game.Content.Load<Texture2D>(@"UI/POMOC-HOVER"), new Vector2(200, 300))
+                    Game.Content.Load<Texture2D>(@"UI/POMOC-HOVER"), new Vector2(250, 400))
             };
 
             var pauseMenuSpriteList = new List<MenuSprite>()
             {
                 new MenuSprite("WROC DO GRY", Game.Content.Load<Texture2D>(@"UI/WROC-DO-GRY"),
-                    Game.Content.Load<Texture2D>(@"UI/WROC-DO-GRY-HOVER"), new Vector2(200, 50)),
+                    Game.Content.Load<Texture2D>(@"UI/WROC-DO-GRY-HOVER"), new Vector2(250, 150)),
                 new MenuSprite("ZAPISZ-GRE", Game.Content.Load<Texture2D>(@"UI/ZAPISZ-GRE"),
-                    Game.Content.Load<Texture2D>(@"UI/ZAPISZ-GRE-HOVER"), new Vector2(200, 100)),
+                    Game.Content.Load<Texture2D>(@"UI/ZAPISZ-GRE-HOVER"), new Vector2(250, 200)),
                 new MenuSprite("STEROWANIE", Game.Content.Load<Texture2D>(@"UI/STEROWANIE"),
-                    Game.Content.Load<Texture2D>(@"UI/STEROWANIE-HOVER"), new Vector2(200, 150)),
+                    Game.Content.Load<Texture2D>(@"UI/STEROWANIE-HOVER"), new Vector2(250, 250)),
                 new MenuSprite("DZWIEK", Game.Content.Load<Texture2D>(@"UI/DZWIEK"),
-                    Game.Content.Load<Texture2D>(@"UI/DZWIEK-HOVER"), new Vector2(200, 200)),
+                    Game.Content.Load<Texture2D>(@"UI/DZWIEK-HOVER"), new Vector2(250, 300)),
                 new MenuSprite("POMOC", Game.Content.Load<Texture2D>(@"UI/POMOC"),
-                    Game.Content.Load<Texture2D>(@"UI/POMOC-HOVER"), new Vector2(200, 250)),
+                    Game.Content.Load<Texture2D>(@"UI/POMOC-HOVER"), new Vector2(250, 350)),
                 new MenuSprite("WYJSCIE DO MENU", Game.Content.Load<Texture2D>(@"UI/WYJSCIE-DO-MENU"),
-                    Game.Content.Load<Texture2D>(@"UI/WYJSCIE-DO-MENU-HOVER"), new Vector2(200, 300))
+                    Game.Content.Load<Texture2D>(@"UI/WYJSCIE-DO-MENU-HOVER"), new Vector2(250, 400))
             };
 
-            mainMenu = new MainMenu(game, menuSpriteList);
-            pauseMenu = new MainMenu(game, pauseMenuSpriteList);
+            mainMenu = new MainMenu(this, menuSpriteList);
+            pauseMenu = new PauseMenu(this, pauseMenuSpriteList);
             
-            gameScoresMenu = new ScoresMenu(this.game, new List<Score>(), gameTimeFont);
+            gameScoresMenu = new ScoresMenu(this, new List<Score>(), gameTimeFont);
             base.LoadContent();
         }
-
-        public void OnGameOver()
-        {
-            
-        }
-
+        
         /// <summary>
         /// Allows the game component to update itself.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         public override void Update(GameTime gameTime)
         {
-            if (game.GameState == GameState.MainMenu)
+            if (this.GameState == GameState.MainMenu)
             {
                 UpdateGameMenu(gameTime);
             }
-            else if (game.GameState == GameState.Playing)
+            else if (this.GameState == GameState.Playing)
             {
                 UpdateGamePlaying(gameTime);
             }
-            else if (game.GameState == GameState.PauseMenu)
+            else if (this.GameState == GameState.PauseMenu)
             {
                 UpdatePauseMenu(gameTime);
             }
-            else if(game.GameState == GameState.GameOver)
+            else if (this.GameState == GameState.GameOver)
             {
                 gameScoresMenu.Update(gameTime, Game.Window.ClientBounds);
             }
@@ -214,7 +216,7 @@ namespace Cervine
             var key = Keyboard.GetState().GetPressedKeys();
             if (key.Contains(Keys.Escape))
             {
-                game.GameState = GameState.PauseMenu;
+                this.GameState = GameState.PauseMenu;
             }
 
             gameBoard.Update(gameTime);
@@ -226,19 +228,19 @@ namespace Cervine
             
             spriteBatch.Draw(backgroundImage, new Rectangle(0, 0, 800, 680), Color.White);
 
-            if (game.GameState == GameState.Playing)
+            if (this.GameState == GameState.Playing)
             {
                 DrawGamePlaying(gameTime);
             }
-            else if (game.GameState == GameState.MainMenu)
+            else if (this.GameState == GameState.MainMenu)
             {
                 mainMenu.Draw(gameTime, spriteBatch);
             }
-            else if (game.GameState == GameState.PauseMenu)
+            else if (this.GameState == GameState.PauseMenu)
             {
                 pauseMenu.Draw(gameTime, spriteBatch);
             }
-            else if (game.GameState == GameState.GameOver)
+            else if (this.GameState == GameState.GameOver)
             {
                 gameScoresMenu.Draw(gameTime, spriteBatch);
             }
@@ -253,67 +255,18 @@ namespace Cervine
             // UI
             // game time
             gameTimeElapsed += gameTime.ElapsedGameTime;
-            spriteBatch.DrawString(gameTimeFont, gameTimeElapsed.TotalSeconds.ToString("0000"), new Vector2(130, 10), Color.White);
             
             gameBoard.Draw(gameTime, spriteBatch);
         }
-    }
 
-    public class ScoresMenu
-    {
-        private SpriteFont _font;
-        private List<Score> _scoresList;
-
-        public ScoresMenu(CervineGame cervineGame, List<Score> scoresList, SpriteFont font)
+        public void GameOver(int timeScore)
         {
-            this._font = font;
-            this._scoresList = scoresList;
+            var score = new Score();
+            this.GameState = GameState.GameOver;
+            score.Time = timeScore;
+            gameScoresMenu.GetHighScoresUserName(timeScore);
         }
 
-        public void GetHighScoresUserName(int score)
-        {
-            var scores = new Score();
-            scores.Time = score;
-            this.GetUserName = true;
-            this.Score = scores;
-            this._scoresList.Add(Score);
-        }
-
-        public Score Score { get; set; }
-        public bool GetUserName { get; set; }
-
-        public void Update(GameTime gameTime, Rectangle clientBounds)
-        {
-            if (GetUserName)
-            {
-                var keyboard = Keyboard.GetState().GetPressedKeys();
-                var key = keyboard.FirstOrDefault();
-                if (key != Keys.Enter)
-                {
-                    Score.Name += key.ToString();
-                }
-                else
-                {
-                    GetUserName = false;
-                }
-            }
-        }
-
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-        {
-            var scores = _scoresList.OrderByDescending(x => x.Time).ToList();
-            for (int i = 0; i < scores.Count; i++)
-            {
-                var score = scores[i];
-                spriteBatch.DrawString(_font, score.Name, new Vector2(20, 10 + 50 * i), Color.White);
-                spriteBatch.DrawString(_font, score.Time.ToString("0000"), new Vector2(550, 10 + 50* i), Color.White);
-            }
-        }
-    }
-
-    public class Score
-    {
-        public string Name { get; set; }
-        public int Time { get; set; }
+        public GameState GameState { get; set; }
     }
 }
