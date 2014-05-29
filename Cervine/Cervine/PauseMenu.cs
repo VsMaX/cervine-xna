@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace Cervine
 {
     public class PauseMenu : MainMenu
     {
-        public PauseMenu(SpriteManager spriteManager, List<MenuSprite> menuSpriteList)
-            : base(spriteManager, menuSpriteList)
+        public PauseMenu(SpriteManager spriteManager, List<MenuSprite> menuSpriteList, SpriteFont spriteFont)
+            : base(spriteManager, menuSpriteList, spriteFont)
         {
         }
 

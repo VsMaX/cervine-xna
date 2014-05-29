@@ -170,8 +170,8 @@ namespace Cervine
                     Game.Content.Load<Texture2D>(@"UI/WYJSCIE-DO-MENU-HOVER"), new Vector2(250, 400))
             };
 
-            mainMenu = new MainMenu(this, menuSpriteList);
-            pauseMenu = new PauseMenu(this, pauseMenuSpriteList);
+            mainMenu = new MainMenu(this, menuSpriteList, gameTimeFont);
+            pauseMenu = new PauseMenu(this, pauseMenuSpriteList, gameTimeFont);
             
             gameScoresMenu = new ScoresMenu(this, new List<Score>(), gameTimeFont);
             base.LoadContent();

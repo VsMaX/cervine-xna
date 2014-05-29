@@ -23,14 +23,16 @@ namespace Cervine
         protected int maxMenuIndex;
         protected List<MenuSprite> menuSprites;
         protected SpriteManager _spriteManager;
+        private SpriteFont _spriteFont;
 
-        public MainMenu(SpriteManager spriteManager, List<MenuSprite> menuSpriteList)
+        public MainMenu(SpriteManager spriteManager, List<MenuSprite> menuSpriteList, SpriteFont spriteFont)
         {
             activeMenuIndex = 0;
             menuSprites = menuSpriteList;
             menuSprites[activeMenuIndex].IsActiveMenuItem = true;
             maxMenuIndex = menuSprites.Count;
             _spriteManager = spriteManager;
+            _spriteFont = spriteFont;
         }
 
         public virtual void Update(GameTime gameTime, Rectangle clientBounds)
@@ -86,6 +88,8 @@ namespace Cervine
 
         public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            spriteBatch.DrawString(_spriteFont, "CERVINE", new Vector2(250, 100), Color.White);
+
             foreach (var menuSprite in menuSprites)
             {
                 menuSprite.Draw(gameTime, spriteBatch);
