@@ -23,7 +23,7 @@ namespace Cervine
         // Movement stuff
         MouseState prevMouseState;
 
-        // Get direction of sprite based on player input and speed
+        // Get Direction of sprite based on player input and speed
         private Vector2 lastDirection;
         private Vector2 lastPosition;
         private Texture2D _destroyableWallTexture;
@@ -50,7 +50,7 @@ namespace Cervine
             _destroyableWallTexture = destroyableWallTexture;
         }
 
-        public override Point direction
+        public override Point Direction
         {
             get
             {
@@ -90,7 +90,7 @@ namespace Cervine
         {
             if (Delay == 0)
             {
-                var newPosition = new Point(Position.X + direction.X, Position.Y + direction.Y);
+                var newPosition = new Point(Position.X + Direction.X, Position.Y + Direction.Y);
                 newPosition = board.AdjustToBoardSize(newPosition);
 
                 if (Life < 0 || Hunger < 0)

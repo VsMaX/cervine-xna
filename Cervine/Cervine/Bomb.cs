@@ -8,15 +8,26 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Cervine
 {
+    /// <summary>
+    /// Bomb class
+    /// </summary>
     public class Bomb : Sprite
     {
+        /// <summary>
+        /// Ctor for bomb
+        /// </summary>
+        /// <param name="texture2D">Bomb display texture</param>
+        /// <param name="position">Bomb's position on board</param>
+        /// <param name="board">GameBoard on which bomb is planted</param>
         public Bomb(Texture2D texture2D, Point position, GameBoard board)
             : base(texture2D, position, board)
         {
             TimeTick = 240;
         }
-
-        public override Point direction
+        /// <summary>
+        /// Direction
+        /// </summary>
+        public override Point Direction
         {
             get { throw new NotImplementedException(); }
         }

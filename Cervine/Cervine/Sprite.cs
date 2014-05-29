@@ -59,10 +59,13 @@ namespace Cervine
             this.Position = lastPosition;
         }
 
-        // Abstract definition of direction property
-        public abstract Point direction
+        // Abstract definition of Direction property
+        public virtual Point Direction
         {
-            get;
+            get
+            {
+                return new Point();
+            }
         }
 
         public abstract void Update(GameTime gameTime);

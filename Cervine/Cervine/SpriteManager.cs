@@ -30,17 +30,43 @@ namespace Cervine
         UserControlledSprite player;
         Texture2D backgroundImage;
         List<Sprite> spriteList = new List<Sprite>();
-
+        /// <summary>
+        /// Size of the board
+        /// </summary>
         public Point boardSize;
+        /// <summary>
+        /// Main menu manager
+        /// </summary>
         public MainMenu mainMenu;
+        /// <summary>
+        /// Pause menu manager
+        /// </summary>
         public PauseMenu pauseMenu;
+        /// <summary>
+        /// Game scores menu
+        /// </summary>
         public ScoresMenu gameScoresMenu;
-        public TimeSpan gameTimeElapsed;
+        /// <summary>
+        /// Font used within application
+        /// </summary>
         public SpriteFont gameTimeFont;
+        /// <summary>
+        /// Reference to CervineGame class
+        /// </summary>
         public CervineGame game;
+        /// <summary>
+        /// Gameboard containinig all sprites, main class in game
+        /// </summary>
         public GameBoard gameBoard;
         private ContentManager _contentManager;
 
+        /// <summary>
+        /// Constructor for SpriteManager
+        /// </summary>
+        /// <param name="game">Instance of CervineGame class</param>
+        /// <param name="boardSize">Width and height of a game board</param>
+        /// <param name="spriteBatch">Spritebatch to draw sprites on screen</param>
+        /// <param name="contentManager">ContentManager for saving and loading game</param>
         public SpriteManager(CervineGame game, Point boardSize, SpriteBatch spriteBatch, ContentManager contentManager)
             : base(game)
         {
@@ -57,16 +83,12 @@ namespace Cervine
         /// </summary>
         public override void Initialize()
         {
-            gameTimeElapsed = new TimeSpan();
             base.Initialize();
         }
 
-        public void OnGameOver(object sender, EventArgs e)
-        {
-            game.GameState = GameState.MainMenu;
-            gameBoard.ResetGame();
-        }
-
+        /// <summary>
+        /// Prepares new GameBoard for new game
+        /// </summary>
         public void NewGame()
         {
             var normalEnemyTexture = Game.Content.Load<Texture2D>(@"Enemies/normal");
@@ -90,7 +112,6 @@ namespace Cervine
             gameBoard = new GameBoard(boardSize, 40, 40, 80, this, gameTimeFont, bombfireTexture,
                 normalEnemyTexture, hunterEnemyTexture, shooterEnemyTexture, tankEnemyTexture, foodTexture,
                 medpackTexture, tntDetonatorTexture, chargingTexture, tntTexture, bombTexture, debrisTexture1, debrisTexture2, debrisTexture3, debrisTexture4, wallDestroyableTexture);
-            gameBoard.GameOverEvent += OnGameOver;
             //Load the player sprite
             player = new UserControlledSprite(
                 Game.Content.Load<Texture2D>(@"player_transparent"),
@@ -101,7 +122,6 @@ namespace Cervine
                 wallDestroyableTexture);
 
             gameBoard.AddObject(player);
-
 
             var r = new Random();
             var wallSprite = Game.Content.Load<Texture2D>(@"wall");
@@ -256,8 +276,6 @@ namespace Cervine
             // Draw the player
             // UI
             // game time
-            gameTimeElapsed += gameTime.ElapsedGameTime;
-            
             gameBoard.Draw(gameTime, spriteBatch);
         }
 

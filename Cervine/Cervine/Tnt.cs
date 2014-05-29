@@ -17,7 +17,7 @@ namespace Cervine
             TimeTick = 41;
         }
 
-        public override Point direction
+        public override Point Direction
         {
             get { throw new NotImplementedException(); }
         }

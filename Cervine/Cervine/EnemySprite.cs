@@ -16,7 +16,7 @@ namespace Cervine.Content
         {
         }
 
-        public override Point direction
+        public override Point Direction
         {
             get { throw new NotImplementedException(); }
         }

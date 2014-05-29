@@ -17,7 +17,7 @@ namespace Cervine
             this.Life = 1;
         }
 
-        public override Point direction
+        public override Point Direction
         {
             get { throw new NotImplementedException(); }
         }
