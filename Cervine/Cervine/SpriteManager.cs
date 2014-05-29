@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.ConstrainedExecution;
+using System.Runtime.Serialization.Formatters.Binary;
 using Cervine.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -268,5 +270,20 @@ namespace Cervine
         }
 
         public GameState GameState { get; set; }
+
+        public void SaveGame()
+        {
+            try
+            {
+                Stream TestFileStream = File.Create("savegame.bin");
+                BinaryFormatter serializer = new BinaryFormatter();
+                serializer.Serialize(TestFileStream, gameBoard);
+                TestFileStream.Close();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }

@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Cervine
 {
+    [Serializable]
     public class GameBoard
     {
         public Field[,] Fields { get; set; }
@@ -19,7 +20,6 @@ namespace Cervine
         public float FrameHeight { get; set; }
         public float MenuBarHeight { get; set; }
         public List<Sprite> Drawables { get; set; }
-        private CervineGame _game;
         public event EventHandler GameOverEvent;
         public SpriteFont font;
         public List<Bomb> Bombs { get; set; }
@@ -28,6 +28,7 @@ namespace Cervine
         public double TimeToRespawn { get; set; }
         public Tnt Tnt { get; set; }
         private double _gameTime;
+        public int LevelUpTime { get; set; }
 
         public UserControlledSprite Player
         {
@@ -74,10 +75,11 @@ namespace Cervine
             _spriteManager = spriteManager;
             this.font = font;
             Bombs = new List<Bomb>();
-            Level = 4;
-            TimeToRespawn = 200000;
+            Level = 1;
+            TimeToRespawn = 60000;
             TimeToPowerUp = 5000;
             TimeToDestroyableWall = 7000;
+            LevelUpTime = 60000;
 
             AddObject(new NormalEnemySprite(_normalEnemyTexture,
                 new Point(19, 14), this));
@@ -268,9 +270,20 @@ namespace Cervine
             {
                 TimeSinceLastDestroyableWall += gameTime.ElapsedGameTime.TotalMilliseconds;
             }
-
+            if (TimeSinceLastLevel >= LevelUpTime)
+            {
+                Level++;
+                LevelUpTime = LevelUpTime*2;
+                TimeSinceLastLevel = 0;
+            }
+            else
+            {
+                TimeSinceLastLevel += gameTime.ElapsedGameTime.TotalMilliseconds;
+            }
             _gameTime += gameTime.ElapsedGameTime.TotalMilliseconds;
         }
+
+        public double TimeSinceLastLevel { get; set; }
 
         private Sprite GenerateDestroyableWall()
         {

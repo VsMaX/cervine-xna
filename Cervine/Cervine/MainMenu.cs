@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -55,6 +58,10 @@ namespace Cervine
                             _spriteManager.NewGame();
                             _spriteManager.GameState = GameState.Playing;
                             break;
+                        case 1:
+                            _spriteManager.gameBoard = LoadGame();
+                            _spriteManager.GameState = GameState.Playing;
+                            break;
                         case 2:
                             _spriteManager.GameState = GameState.GameOver;
                             break;
@@ -64,6 +71,15 @@ namespace Cervine
                 }
             }
             Delay = (Delay + 1)%5;
+        }
+
+        private GameBoard LoadGame()
+        {
+            IFormatter formatter = new BinaryFormatter();
+            Stream stream = new FileStream("savegame.bin", FileMode.Open, FileAccess.Read, FileShare.Read);
+            GameBoard board = (GameBoard)formatter.Deserialize(stream);
+            stream.Close();
+            throw new NotImplementedException();
         }
 
         public int Delay { get; set; }
