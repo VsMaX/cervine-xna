@@ -80,7 +80,7 @@ namespace Cervine
         /// </summary>
         public bool IsPlayerInRange
         {
-            get { return AGwiazdka.ManhattanHeuristic(board.Fields[this.Position.X, this.Position.Y],
+            get { return AGwiazdka.DistanceFields(board.Fields[this.Position.X, this.Position.Y],
                 board.Fields[board.Player.Position.X,board.Player.Position.Y]) < 10; }
         }
     }

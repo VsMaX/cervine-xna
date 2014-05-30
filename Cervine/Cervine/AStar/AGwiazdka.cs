@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Cervine.AStar;
 using Microsoft.Xna.Framework;
 using Priority_Queue;
 
@@ -20,7 +19,7 @@ namespace Cervine
         public List<Field> FindPath(Field start, Field end)
         {
             HeapPriorityQueue<Field> openList = new HeapPriorityQueue<Field>((gameBoard.SizeX + 1) * (gameBoard.SizeY + 1));
-            ResetPositions();
+            ResetAGwiazdka();
             start.G = 0;
             start.H = 0;
             start.Priority = 0;
@@ -30,12 +29,19 @@ namespace Cervine
             {
                 var unit = openList.Dequeue();
                 unit.Closed = true;
-
                 if (unit == end)
                 {
-                    return BacktracePath(unit);
+                    var list = new List<Field>();
+                    var node = unit;
+                    list.Add(node);
+                    while (node.Parent != null)
+                    {
+                        node = node.Parent;
+                        list.Add(node);
+                    }
+                    list.RemoveAt(list.Count - 1);
+                    return list;
                 }
-
                 var positions = gameBoard.GetAdjacentPositionsForAStar(unit).ToList();
                 foreach (var position in positions)
                 {
@@ -45,7 +51,7 @@ namespace Cervine
                         if (!position.Opened || distance < position.G)
                         {
                             position.G = distance;
-                            position.H = ManhattanHeuristic(position, end);
+                            position.H = DistanceFields(position, end);
                             position.Priority = position.G + position.H;
                             position.Parent = unit;
                             if (!position.Opened)
@@ -61,8 +67,8 @@ namespace Cervine
             }
             return null;
         }
-
-        private void ResetPositions()
+        
+        private void ResetAGwiazdka()
         {
             for (int i = 0; i < gameBoard.SizeX; i++)
             {
@@ -81,23 +87,9 @@ namespace Cervine
             }
         }
 
-        public static double ManhattanHeuristic(Field currentUnit, Field goalUnit)
+        public static double DistanceFields(Field currentUnit, Field goalUnit)
         {
             return Math.Abs(currentUnit.X - goalUnit.X) + Math.Abs(currentUnit.Y - goalUnit.Y);
-        }
-
-        private List<Field> BacktracePath(Field unit)
-        {
-            var list = new List<Field>();
-            var node = unit;
-            list.Add(node);
-            while (node.Parent != null)
-            {
-                node = node.Parent;
-                list.Add(node);
-            }
-            list.RemoveAt(list.Count - 1);
-            return list;
         }
     }
 }

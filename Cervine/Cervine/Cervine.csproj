@@ -74,7 +74,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AStar\AGwiazdka.cs" />
-    <Compile Include="AStar\Direction.cs" />
     <Compile Include="AStar\HeapPriorityQueue.cs" />
     <Compile Include="AStar\IPriorityQueue.cs" />
     <Compile Include="AStar\PriorityQueueNode.cs" />
