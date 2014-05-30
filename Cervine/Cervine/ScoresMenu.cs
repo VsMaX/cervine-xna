@@ -34,13 +34,16 @@ namespace Cervine
         /// <param name="score">Score made by player</param>
         public void GetHighScoresUserName(int score)
         {
-            var scores = new Score();
-            scores.Time = score;
-            this.GetUserName = true;
-            this.Score = scores;
-            this._scoresList.Add(Score);
+            var scoreLowest = _scoresList.Skip(4).Take(1).FirstOrDefault();
+            if (scoreLowest == null || scoreLowest.Time < score)
+            {
+                var scores = new Score();
+                scores.Time = score;
+                this.GetUserName = true;
+                this.Score = scores;
+                this._scoresList.Add(Score);
+            }
         }
-
         /// <summary>
         /// Score made by last player
         /// </summary>
@@ -59,10 +62,10 @@ namespace Cervine
             if (Delay == 0)
             {
                 var keyboard = Keyboard.GetState().GetPressedKeys();
+                var key = keyboard.FirstOrDefault();
                 if (GetUserName)
                 {
-                    var key = keyboard.FirstOrDefault();
-                    if (key == Keys.Enter)
+                    if (key == Keys.Enter || key == Keys.Escape)
                     {
                         GetUserName = false;
                     }
@@ -75,9 +78,12 @@ namespace Cervine
                         Score.Name = Score.Name.Remove(Score.Name.Length - 1);
                     }
                 }
-                if (keyboard.FirstOrDefault() == Keys.Escape)
+                else
                 {
-                    _spriteManager.GameState = GameState.MainMenu;
+                    if (key == Keys.Escape || key == Keys.Enter)
+                    {
+                        _spriteManager.GameState = GameState.MainMenu;
+                    }
                 }
             }
             Delay = (Delay + 1) % 5;
